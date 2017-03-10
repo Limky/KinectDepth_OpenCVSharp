@@ -1,5 +1,6 @@
 ## KinectDepth_OpenCVSharp ##
-
+* editer Limky
+* Version 0.1
 
 
 ## What is this repository for? ##
