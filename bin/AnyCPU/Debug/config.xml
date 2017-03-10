@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <mode>
+    <floor>True</floor>
+    <wall>False</wall>
+  </mode>
+  <depth>
+    <minDepth>5</minDepth>
+    <maxDepth>1600</maxDepth>
+  </depth>
+  <pixel>
+    <minPixel>1</minPixel>
+    <maxPixel>255</maxPixel>
+  </pixel>
+  <paddingDetect>
+    <left>0</left>
+    <right>0</right>
+    <top>10</top>
+    <bottom>10</bottom>
+  </paddingDetect>
+  <startXY>
+    <startX>200</startX>
+    <startY>0</startY>
+  </startXY>
+  <unityScreen>
+    <width>1330</width>
+    <height>1000</height>
+  </unityScreen>
+  <time>
+    <savedTime>2017-03-09 03:55:55</savedTime>
+  </time>
+</root>

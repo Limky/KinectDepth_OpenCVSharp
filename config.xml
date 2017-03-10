@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <x>
+    <mul>Test mul</mul>
+    <add>Test add</add>
+  </x>
+  <y>
+    <mul>Test mul</mul>
+    <add>Test add</add>
+  </y>
+</root>
