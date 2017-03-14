@@ -66,3 +66,5 @@ D:\work\workspace_kinect\DepthBasics-WPF\bin\AnyCPU\Debug\OpenCvSharp.xml
 D:\work\workspace_kinect\DepthBasics-WPF\bin\AnyCPU\Debug\OpenCvSharp.Blob.xml
 D:\work\workspace_kinect\DepthBasics-WPF\bin\AnyCPU\Debug\OpenCvSharp.CPlusPlus.xml
 D:\work\workspace_kinect\DepthBasics-WPF\bin\AnyCPU\Debug\OpenCvSharp.Extensions.xml
+D:\work\workspace_kinect\DepthBasics-WPF\bin\AnyCPU\Debug\Newtonsoft.Json.dll
+D:\work\workspace_kinect\DepthBasics-WPF\bin\AnyCPU\Debug\Newtonsoft.Json.xml

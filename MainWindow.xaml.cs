@@ -121,7 +121,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private double screenHeight = 0;
 
         private Boolean reverseFlag = false;
-
+        private static HttpClient httpClient = HttpClient.getInstance();
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -745,11 +745,19 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         //Kinect 설정 저장
         private void saveConfig_button_Click(object sender, RoutedEventArgs e)
         {
+   
+           httpClient.sendXMLToServer();
+
             CreateXML();
         }
         //kinect 설정 불러오기
         private void readConfig_button_Click(object sender, RoutedEventArgs e)
         {
+          
+            XmlDocument doc = httpClient.loadXMLFromServer();
+            if (doc != null) {
+                doc.Save("./config.xml");
+            }
             ReadXML();
         }
         //Textbox util 
@@ -878,10 +886,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             try
             {
           
-                // 생성할 XML 파일 경로와 이름, 인코딩 방식을 설정합니다.
-                String currentPath = Environment.CurrentDirectory;
-                Console.WriteLine(currentPath);
-
+                // 생성할 XML 파일 경로와 이름, 인코딩 방식을 설정합니다.         
                 XmlTextWriter textWriter = new XmlTextWriter(@"./config.xml", Encoding.UTF8);
 
                 // 들여쓰기 설정
@@ -984,6 +989,9 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                 textWriter.WriteEndDocument();
                 textWriter.Close();
+
+                String currentPath = Environment.CurrentDirectory;
+                Console.WriteLine("XML file saved in local "+ currentPath);
             }
             catch (FormatException e)
             {
@@ -1059,12 +1067,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
                     }
-                    Console.WriteLine(mMinDepth + " , " + mMaxDepth + " , " + mMinPixel + " , " + mMaxPixel);
+                   // Console.WriteLine(mMinDepth + " , " + mMaxDepth + " , " + mMinPixel + " , " + mMaxPixel);
                 }
             }
             catch (IOException ex)
             {
-                Console.WriteLine(mMinDepth + " , " + mMaxDepth);
+                Console.WriteLine("------------ReadXML err-----------");
             }
         }
        
@@ -1124,7 +1132,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
       {
             //실시간으로 데이터를 보낸다. E를 보내는 이유 -> 좌표하나임을 구분시켜주기 위해
             String vectorData = X + mStartX + ","+ Y + mStartY + "E";
-            Console.WriteLine("sending point :" + vectorData);
+       //     Console.WriteLine("sending point :" + vectorData);
             SendLocation(vectorData);
 
         }
