@@ -1,0 +1,53 @@
+    if (lastX > 255)
+                    {
+                        int scaleX = 0;
+                        if (455 <= lastX && lastX < 485)
+                        {
+                             scaleX = (startDepth / 60) * 10;
+                           
+                        }
+                        else if (425 <= lastX && lastX < 455) {
+
+                            scaleX = (startDepth / 60) * 7;
+                            
+                        }
+                        else if (395 <= lastX && lastX < 425)
+                        {
+
+                            scaleX = (startDepth / 60) * 6;
+
+                        }
+                        else if (365 <= lastX && lastX < 395)
+                        {
+
+                            scaleX = (startDepth / 60) * 5;
+
+                        }
+                        else if (335 <= lastX && lastX < 365)
+                        {
+
+                            scaleX = (startDepth / 60) * 4;
+
+                        }
+                        else if (305 <= lastX && lastX < 335)
+                        {
+
+                            scaleX = (startDepth / 60) * 3;
+
+                        }
+                        else if (275 <= lastX && lastX < 305)
+                        {
+
+                            scaleX = (startDepth / 60) * 2;
+
+                        }
+                        else if (256 <= lastX && lastX < 275)
+                        {
+
+                            scaleX = (startDepth / 60) * 1;
+
+                        }
+                        Console.WriteLine("scaleX === " + scaleX);
+                        lastX = lastX + scaleX;
+
+                    }
