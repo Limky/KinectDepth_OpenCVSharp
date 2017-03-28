@@ -24,7 +24,6 @@ using System.Text;
 using System;
 using System.Threading;
 
-
 namespace Microsoft.Samples.Kinect.DepthBasics
 {
     using System;
