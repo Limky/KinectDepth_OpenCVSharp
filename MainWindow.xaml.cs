@@ -437,7 +437,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     if (ellipses.Length > i)
                     {
                         //reverse를 체크하지 않은 경우.
-                        if (!reverseFlag)
+                        if (reverseFlag)
                         {
 
                             Console.Write("X = " + ((Point)pointList[i]).X + " , Y = " + ((Point)pointList[i]).Y);
@@ -1167,15 +1167,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             break;
 
 
+                        
                         case "wallDetection":
                             mWallStartY = Convert.ToInt16(node["wallY"].InnerText);
                             wall_startY_textBox.Text = Convert.ToString(mWallStartY);
-                            mWallScale = Convert.ToInt32(node["wallScale"].InnerText);
-                            wall_scale_slider.Value = Convert.ToInt32(mWallScale);
-
+                            mWallScale = Convert.ToDouble(node["wallScale"].InnerText);
+                            wall_scale_slider.Value = mWallScale;
                             break;
-
-
 
 
                     }
