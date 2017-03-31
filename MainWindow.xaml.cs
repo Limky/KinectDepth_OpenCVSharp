@@ -24,6 +24,7 @@ using System.Text;
 using System;
 using System.Threading;
 
+
 namespace Microsoft.Samples.Kinect.DepthBasics
 {
     using System;
@@ -102,9 +103,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private static int mPaddingTopHeight = 0;
         private static int mPaddingBottomtHeight = 0;
 
-        private static int mWallPaddingRightWidth = 0;
-        private static int mWallPaddingLeftWidth = 0;
-
         private static int mStartX = 0;
         private static int mStartY = 0;
 
@@ -122,7 +120,9 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private double screenWidth = 0;
         private double screenHeight = 0;
 
-        private int mWallStartY = 250;
+        private static int mWallStartY = 250;
+        private static double mWallScale = 0;
+
 
         private Boolean reverseFlag = false;
         private static HttpClient httpClient = HttpClient.getInstance();
@@ -388,14 +388,40 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     //무효값이 들어올 때 저장해논 최초유효값 좌표를 참고해 중앙값을 계산 후 좌표리스트에 저장 (PointList)
                     lastX = (startX + (i - startVal)) / 2;
 
-           
-                      //  Console.WriteLine("R TEST lastX = " + lastX + " , " + "startDepth = " + startDepth);
-                        lastX = lastX * ((double)startDepth / minDepth) - (512 * ((double)startDepth / minDepth) - 512) / 2; //HS8 알고리즘
-                        Console.WriteLine("R TEST AFTER lastX = " + lastX + " , " + "startDepth = " + startDepth);
+                    
+                    //  Console.WriteLine("R TEST lastX = " + lastX + " , " + "startDepth = " + startDepth);
+                    lastX = lastX * ((double)startDepth / minDepth) - (mKinectDepthStreamWidth * ((double)startDepth / minDepth) - mKinectDepthStreamWidth) / 2; //HS8 offset 한수 알고리즘
+                    Console.WriteLine("R TEST AFTER lastX = " + lastX + " , " + "startDepth = " + startDepth);
 
 
-                    pointList.Add(new Point(lastX, (int)startDepth-minDepth));
-                    startFlag = !startFlag;
+                    if (pointList.Count > 0)
+                    {
+                        for (int num = 0; num < pointList.Count; num++)
+                        {
+                            double X = ((Point)pointList[num]).X;
+                            if (X - 40 <= lastX && lastX <= X + 40)
+                            {
+                                startFlag = !startFlag;
+                            }
+                            else
+                            {
+
+                                pointList.Add(new Point(lastX, (int)(startDepth) - minDepth));
+                                startFlag = !startFlag;
+                            }
+
+                        }
+                    }
+                    else
+                    {
+
+                        pointList.Add(new Point(lastX, (int)(startDepth) - minDepth));
+                        startFlag = !startFlag;
+                    }
+
+
+
+
                 }
 
                 lastDepth = depth;
@@ -410,34 +436,43 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 {
                     if (ellipses.Length > i)
                     {
-
+                        //reverse를 체크하지 않은 경우.
                         if (!reverseFlag)
                         {
-                  
+
+                            Console.Write("X = " + ((Point)pointList[i]).X + " , Y = " + ((Point)pointList[i]).Y);
 
                             double x = (double)(1 - ((Point)pointList[i]).X / mKinectDepthStreamWidth);
-                            double y = (double)(1 - ((Point)pointList[i]).Y / (mMaxDepth-minDepth));
+                            double y = (double)(1 - ((Point)pointList[i]).Y / (mMaxDepth - minDepth));
 
 
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
                             Canvas.SetTop(ellipses[i], screenHeight * y);
 
+                        x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
+  
+
+                        //    x = (x + (145f / 512f)) / (1 + ((145f * 2f) / 512f));
+
                             //  Console.WriteLine("TEST : " + screenWidth * x +" , "+ screenWidth * y);
                             //Unity로 실시간 좌표 전송하기
                             if (unityConnectSuccess)
-                                Update((double)x, (double)y);
-                            // Update((int)((Point)pointList[i]).X, (int)((Point)pointList[i]).Y);
+                                if (0 < x)
+                                    Update((double)x, (double)y);
 
                         }
                         else
                         {
-                            Console.WriteLine("포인트 사이즈" + pointList.Count);
+
                             Console.Write(((Point)pointList[i]).X + "," + ((Point)pointList[i]).Y + " ");
 
                             double x = (double)(((Point)pointList[i]).X / mKinectDepthStreamWidth);
                             double y = (double)(((Point)pointList[i]).Y / (mMaxDepth - minDepth));
 
-       
+                            x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
+                        //    x = (x + (145f / 512f)) / (1 + ((145f * 2f) / 512f));
+
+
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
                             Canvas.SetTop(ellipses[i], screenHeight * y);
 
@@ -445,8 +480,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                             //Unity로 실시간 좌표 전송하기
                             if (unityConnectSuccess)
-                                Update(x, y);
-                        
+                                if(0 < x)
+                                    Update((double)x , (double)y);
 
 
                         }
@@ -480,8 +515,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         /// </summary>
         private void RenderDepthPixels()
         {
-
-
             //mFindingCenterFlag 가 true이면 무게중심을 찾는 알고리즘을 실행시킨다.
             if (mFindingCenterFlag)
                 findCenterContourImage(cvImage, 150);
@@ -492,7 +525,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 cvImage.ImageData,
                 this.depthBitmap.PixelWidth * this.depthBitmap.PixelHeight,
                 this.depthBitmap.PixelWidth);
-
 
         }
 
@@ -608,7 +640,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
-
+     
 
         /* * * * * * * * * * * * * * * * * * *   심도설정  * * * * * * * * * * * * * * * * * * * * */
         //MinDepth 설정
@@ -742,7 +774,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private void saveConfig_button_Click(object sender, RoutedEventArgs e)
         {
 
-       //     httpClient.sendXMLToServer(SERVER_IP + SERVER_PORT);
+            //     httpClient.sendXMLToServer(SERVER_IP + SERVER_PORT);
 
             CreateXML();
         }
@@ -750,12 +782,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private void readConfig_button_Click(object sender, RoutedEventArgs e)
         {
 
-        /*   XmlDocument doc = httpClient.loadXMLFromServer(SERVER_IP + SERVER_PORT);
-            if (doc != null)
-            {
-                doc.Save("./config.xml");
-            }
-         */
+            /*   XmlDocument doc = httpClient.loadXMLFromServer(SERVER_IP + SERVER_PORT);
+                if (doc != null)
+                {
+                    doc.Save("./config.xml");
+                }
+             */
 
             ReadXML();
         }
@@ -887,7 +919,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
         }
 
-
+        //벽면모드 1px 감지 벽과의 거리 조절
         private void wall_startY_textBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
@@ -897,13 +929,24 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 Console.WriteLine("mWallStartY = " + mWallStartY);
 
             }
-            else {
+            else
+            {
                 Console.WriteLine("=====유효하지 않는 값입니다. defualt 250 할당 ==== ");
                 mWallStartY = 250;
             }
         }
 
+      
 
+        private void wall_scale_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Slider slider = sender as Slider;
+            Console.WriteLine("mWallScale = " + (double)slider.Value);
+            mWallScale = (double)slider.Value;
+ 
+            wall_scale_value_label.Content = mWallScale.ToString("N4");
+
+        }
 
 
         //xml을 생성하고 설정값을 저장한다.
@@ -964,7 +1007,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 textWriter.WriteEndElement();
 
                 textWriter.WriteEndElement();
-                
+
                 textWriter.WriteStartElement("unitIpAddress");
 
                 textWriter.WriteStartElement("ip");
@@ -977,7 +1020,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                 textWriter.WriteEndElement();
 
-                
+
                 textWriter.WriteStartElement("floorPaddingDetect");
 
                 textWriter.WriteStartElement("left");
@@ -1010,25 +1053,16 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                 textWriter.WriteEndElement();
 
-                textWriter.WriteStartElement("wallDistance");
+                textWriter.WriteStartElement("wallDetection");
                 textWriter.WriteStartElement("wallY");
                 textWriter.WriteString(Convert.ToString(mWallStartY));
                 textWriter.WriteEndElement();
-             
-                textWriter.WriteEndElement();
-
-
-
-                textWriter.WriteStartElement("wallPaddingDetect");
-                textWriter.WriteStartElement("left");
-                textWriter.WriteString(Convert.ToString(mWallPaddingLeftWidth));
-                textWriter.WriteEndElement();
-                textWriter.WriteStartElement("right");
-                textWriter.WriteString(Convert.ToString(mWallPaddingRightWidth));
+                textWriter.WriteStartElement("wallScale");
+                textWriter.WriteString(Convert.ToString(mWallScale));
                 textWriter.WriteEndElement();
 
                 textWriter.WriteEndElement();
-    
+
 
                 textWriter.WriteStartElement("time");
                 textWriter.WriteStartElement("savedTime");
@@ -1133,21 +1167,14 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             break;
 
 
-                        case "wallDistance":
+                        case "wallDetection":
                             mWallStartY = Convert.ToInt16(node["wallY"].InnerText);
                             wall_startY_textBox.Text = Convert.ToString(mWallStartY);
-
-
-                            break;
-
-
-                        case "wallPaddingDetect":
-                            mWallPaddingLeftWidth = Convert.ToInt16(node["left"].InnerText);
-                            wall_left_width.Text = Convert.ToString(mWallPaddingLeftWidth);
-                            mWallPaddingRightWidth = Convert.ToInt16(node["right"].InnerText);
-                            wall_right_width.Text = Convert.ToString(mWallPaddingRightWidth);
+                            mWallScale = Convert.ToInt32(node["wallScale"].InnerText);
+                            wall_scale_slider.Value = Convert.ToInt32(mWallScale);
 
                             break;
+
 
 
 
@@ -1225,7 +1252,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         {
             //실시간으로 데이터를 보낸다. E를 보내는 이유 -> 좌표하나임을 구분시켜주기 위해
             String vectorData = X + mStartX + "," + Y + mStartY + "E";
-            //     Console.WriteLine("sending point :" + vectorData);
+              Console.WriteLine("sending point :" + vectorData);
             SendLocation(vectorData);
 
         }
@@ -1331,25 +1358,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
         }
 
-        private void wall_left_width_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            int convertValue = convertTextBoxValue((TextBox)sender);
-            if (convertValue >= 0)
-            {
-                mWallPaddingLeftWidth = convertValue;
-                Console.WriteLine("mWallPaddingLeftWidth = " + mWallPaddingLeftWidth);
-            }
-        }
-
-        private void wall_right_width_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            int convertValue = convertTextBoxValue((TextBox)sender);
-            if (convertValue >= 0)
-            {
-                mWallPaddingRightWidth = convertValue;
-                Console.WriteLine("mWallPaddingRightWidth = " + mWallPaddingRightWidth);
-            }
-        }
+      
     }
 
 
