@@ -1175,7 +1175,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             wall_scale_slider.Value = mWallScale;
                             break;
 
-
                     }
 
                 }
