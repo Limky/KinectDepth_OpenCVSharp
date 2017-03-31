@@ -111,6 +111,7 @@
                 </TransformGroup>
             </Label.RenderTransform>
         </Label>
+            
         <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Height="78" Margin="640,3,0,0" Grid.Row="2" VerticalAlignment="Top" Width="2" Grid.RowSpan="2"/>
         <GridSplitter x:Name="gridSplitter_Copy" HorizontalAlignment="Left" Height="73" Margin="1097,3,0,0" Grid.Row="2" VerticalAlignment="Top" Width="2" Grid.RowSpan="2"/>
         <GridSplitter x:Name="gridSplitter_Copy1" HorizontalAlignment="Left" Height="73" Margin="1369,5,0,0" Grid.Row="2" VerticalAlignment="Top" Width="2" Grid.RowSpan="2"/>
