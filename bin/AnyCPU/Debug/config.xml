@@ -1,32 +1,37 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <mode>
-    <floor>True</floor>
-    <wall>False</wall>
+    <floor>False</floor>
+    <wall>True</wall>
+    <reverse>True</reverse>
   </mode>
   <depth>
-    <minDepth>555</minDepth>
-    <maxDepth>1400</maxDepth>
+    <minDepth>565</minDepth>
+    <maxDepth>1535</maxDepth>
   </depth>
-  <pixel>
-    <minPixel>1</minPixel>
-    <maxPixel>255</maxPixel>
-  </pixel>
-  <paddingDetect>
-    <left>0</left>
-    <right>0</right>
-    <top>10</top>
-    <bottom>10</bottom>
-  </paddingDetect>
-  <startXY>
-    <startX>200</startX>
-    <startY>0</startY>
-  </startXY>
   <unityScreen>
     <width>1330</width>
     <height>1000</height>
   </unityScreen>
+  <unitIpAddress>
+    <ip>192.168.100.3</ip>
+    <port>6777</port>
+  </unitIpAddress>
+  <floorPaddingDetect>
+    <left>0</left>
+    <right>0</right>
+    <top>0</top>
+    <bottom>0</bottom>
+  </floorPaddingDetect>
+  <startXY>
+    <startX>0</startX>
+    <startY>0</startY>
+  </startXY>
+  <wallDetection>
+    <wallY>290</wallY>
+    <wallScale>0.32</wallScale>
+  </wallDetection>
   <time>
-    <savedTime>2017-03-14 03:33:34</savedTime>
+    <savedTime>2017-03-31 02:55:23</savedTime>
   </time>
 </root>
