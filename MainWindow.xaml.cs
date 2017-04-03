@@ -124,7 +124,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private static double mWallScale = 0;
 
 
-        private Boolean reverseFlag = false;
+        private Boolean reverseFlag;
         private static HttpClient httpClient = HttpClient.getInstance();
 
 
@@ -176,6 +176,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 ellipses[i] = CreateAnEllipse(20, 20);
                 LayoutRoot.Children.Add(ellipses[i]);
             }
+
+            initQueue();
 
             //초기 이전 설정값을 불러서 세팅한다.
             ReadXML();
@@ -345,6 +347,19 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
 
+        Queue[] queueListX = new Queue[20];
+        Queue[] queueListY = new Queue[20];
+
+        private void initQueue()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                queueListX[i] = new Queue();
+                queueListY[i] = new Queue();
+            }
+
+        }
+
         // Wall Mode kinect
         private unsafe void ProcessDepthFrameDataWall(IntPtr depthFrameData, uint depthFrameDataSize, ushort mmvalue, ushort minDepth, ushort maxDepth)
         {
@@ -361,11 +376,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             int endVal = this.depthFrameDescription.Width * (value + 1);
 
             ushort startDepth = 0;
-            ushort lastDepth = 0;
+            //    ushort lastDepth = 0;
             int startX = 0;
             double lastX = 0;
             Boolean startFlag = false;
             ArrayList pointList = new ArrayList();
+            ArrayList samplingPointList = new ArrayList();
 
             for (int i = startVal; i < endVal; i++)
             {
@@ -388,44 +404,138 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     //무효값이 들어올 때 저장해논 최초유효값 좌표를 참고해 중앙값을 계산 후 좌표리스트에 저장 (PointList)
                     lastX = (startX + (i - startVal)) / 2;
 
-                    
+
                     //  Console.WriteLine("R TEST lastX = " + lastX + " , " + "startDepth = " + startDepth);
                     lastX = lastX * ((double)startDepth / minDepth) - (mKinectDepthStreamWidth * ((double)startDepth / minDepth) - mKinectDepthStreamWidth) / 2; //HS8 offset 한수 알고리즘
-                    Console.WriteLine("R TEST AFTER lastX = " + lastX + " , " + "startDepth = " + startDepth);
+             //       Console.WriteLine("R TEST AFTER lastX = " + lastX + " , " + "startDepth = " + startDepth);
 
-
-                    if (pointList.Count > 0)
-                    {
-                        for (int num = 0; num < pointList.Count; num++)
-                        {
-                            double X = ((Point)pointList[num]).X;
-                            if (X - 40 <= lastX && lastX <= X + 40)
-                            {
-                                startFlag = !startFlag;
-                            }
-                            else
-                            {
-
-                                pointList.Add(new Point(lastX, (int)(startDepth) - minDepth));
-                                startFlag = !startFlag;
-                            }
-
-                        }
-                    }
-                    else
-                    {
-
-                        pointList.Add(new Point(lastX, (int)(startDepth) - minDepth));
-                        startFlag = !startFlag;
-                    }
-
-
-
+                    pointList.Add(new Point(lastX, (double)(startDepth)));
+                    startFlag = !startFlag;
 
                 }
 
-                lastDepth = depth;
+                //   lastDepth = depth;
             }
+
+
+        //    Console.WriteLine("pointList 갯수 = " + pointList.Count);
+            //안쓰는 큐는 클리어한다. 왜냐면 큐가 전역변수로 할당해놨기 때문에 클리어를 안하면 계속 큐에 들어있어서 연산하기 때문에..
+            for (int i = pointList.Count; i < queueListX.Length; i++)
+            {
+                queueListX[i].Clear();
+                queueListY[i].Clear();
+            }
+            
+
+            for (int i = 0; i < pointList.Count; i++)
+            {
+
+                double newX = ((Point)pointList[i]).X;
+                double newDepth = (double)((Point)pointList[i]).Y;
+
+                for (int j = 0; j < pointList.Count; j++)
+                {
+                    double pastX = 0;
+                    double pastDepth = 0;
+
+                    if (queueListX[j].Count > 0)
+                    {
+                        pastX = (double)queueListX[j].Peek();
+                        pastDepth = (double)queueListY[j].Peek();
+                    }
+                    else {
+                        pastX = newX;
+                        pastDepth = newDepth;
+                    }
+
+                    //       Console.WriteLine("newX = " + newX + " VS pastX = " + pastX);
+                           Console.WriteLine("newDepth = " + newDepth + " VS pastDepth = " + pastDepth);
+                    //&& (pastDepth - 10 <= newDepth && newDepth <= pastDepth + 10)
+                    if ((pastX -70 <= newX && newX <= (pastX + 70))  && (pastDepth - 100 <= newDepth && newDepth <= pastDepth + 100) )
+                    {// 겹친다..
+                     // 겹치는 범위에 큐에 넣는다.
+                
+                     
+                        if (queueListX[j].Count >= 5)
+                        {
+                            queueListX[j].Dequeue();
+                            queueListY[j].Dequeue();
+                        }
+                       Console.WriteLine("Queue ListX [" + j + "] 에 겹치는 값 X = " + pointList[i]);
+                        queueListX[j].Enqueue(newX);
+                        queueListY[j].Enqueue(newDepth);
+                        break; //조건 만족햇으면 더이상 반복하지 말고 for/while문을 끝내라.
+
+                    }
+                    else {
+               //         Console.WriteLine("Queue ListX [" + i + "] 에 새로운 값 X = " + pointList[i]);
+                        if (queueListX[i].Count >= 5)
+                        {
+                            queueListX[i].Dequeue();
+                            queueListY[i].Dequeue();
+                        }
+                        //진짜 새로운 점이다.
+                        queueListX[i].Enqueue(newX);
+                        queueListY[i].Enqueue(newDepth);
+                        break; //조건 만족햇으면 더이상 반복하지 말고 for/while문을 끝내라.
+                    }
+
+                   
+                }
+
+         
+
+
+            }
+
+
+            for (int i = 0; i < queueListX.Length; i++)
+            {
+                if (queueListX[i].Count > 0)
+                {
+                    double averageX = 0;
+                    double averageY = 0;
+                    int number = 0;
+
+                    while (number < queueListX[i].Count)
+                    {
+
+                        double indexX = (double)queueListX[i].Dequeue();
+                        double indeyY= (double)queueListY[i].Dequeue();
+
+                        //Console.WriteLine(i+"번째의 lastX 요소 : " + indexX);
+              //          Console.WriteLine(i+"번째의 lastY 요소 : " + indeyY);
+                        averageX += indexX;
+                        queueListX[i].Enqueue(indexX);
+
+                        averageY += indeyY;
+                        queueListY[i].Enqueue(indeyY);
+
+                        number++;
+
+                    }
+                    averageX = averageX / queueListX[i].Count;
+                    averageY = averageY / queueListY[i].Count;
+
+
+             //       PrintValues(queueListX[i]);
+                    Console.WriteLine("queueListX [" + i + "] 에 들어있는 x값들의 평균= " + averageX);
+                    Console.WriteLine("queueListY [" + i + "] 에 들어있는 y값들의 평균= " + averageY);
+                    samplingPointList.Add(new Point(averageX, (double)(averageY) - minDepth));
+                    drawAndSubmit(samplingPointList);
+                }
+            }
+
+
+           
+
+
+
+        }
+
+        private void drawAndSubmit(ArrayList pointList)
+        {
+
 
 
             int cllipse_index = 0;
@@ -440,19 +550,19 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                         if (reverseFlag)
                         {
 
-                            Console.Write("X = " + ((Point)pointList[i]).X + " , Y = " + ((Point)pointList[i]).Y);
+                            //    Console.Write("X = " + ((Point)pointList[i]).X + " , Y = " + ((Point)pointList[i]).Y);
 
                             double x = (double)(1 - ((Point)pointList[i]).X / mKinectDepthStreamWidth);
-                            double y = (double)(1 - ((Point)pointList[i]).Y / (mMaxDepth - minDepth));
+                            double y = (double)(1 - ((Point)pointList[i]).Y / (mMaxDepth - mMinDepth));
 
 
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
                             Canvas.SetTop(ellipses[i], screenHeight * y);
 
-                        x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
-  
+                            x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
-                        //    x = (x + (145f / 512f)) / (1 + ((145f * 2f) / 512f));
+
+                            //    x = (x + (145f / 512f)) / (1 + ((145f * 2f) / 512f));
 
                             //  Console.WriteLine("TEST : " + screenWidth * x +" , "+ screenWidth * y);
                             //Unity로 실시간 좌표 전송하기
@@ -464,13 +574,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                         else
                         {
 
-                            Console.Write(((Point)pointList[i]).X + "," + ((Point)pointList[i]).Y + " ");
+                            //  Console.Write(((Point)pointList[i]).X + "," + ((Point)pointList[i]).Y + " ");
 
                             double x = (double)(((Point)pointList[i]).X / mKinectDepthStreamWidth);
-                            double y = (double)(((Point)pointList[i]).Y / (mMaxDepth - minDepth));
+                            double y = (double)(((Point)pointList[i]).Y / (mMaxDepth - mMinDepth));
 
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
-                        //    x = (x + (145f / 512f)) / (1 + ((145f * 2f) / 512f));
+                            //    x = (x + (145f / 512f)) / (1 + ((145f * 2f) / 512f));
 
 
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
@@ -480,8 +590,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                             //Unity로 실시간 좌표 전송하기
                             if (unityConnectSuccess)
-                                if(0 < x)
-                                    Update((double)x , (double)y);
+                                if (0 < x)
+                                    Update((double)x, (double)y);
 
 
                         }
@@ -504,9 +614,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 Console.WriteLine();
                 Console.WriteLine();
             }
+        }
 
-
-
+        public static void PrintValues(IEnumerable myCollection)
+        {
+            foreach (Object obj in myCollection)
+                Console.Write("    {0}", obj);
+            Console.WriteLine();
         }
 
 
@@ -640,7 +754,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
-     
+
 
         /* * * * * * * * * * * * * * * * * * *   심도설정  * * * * * * * * * * * * * * * * * * * * */
         //MinDepth 설정
@@ -936,14 +1050,14 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
         }
 
-      
+
 
         private void wall_scale_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             Slider slider = sender as Slider;
             Console.WriteLine("mWallScale = " + (double)slider.Value);
             mWallScale = (double)slider.Value;
- 
+
             wall_scale_value_label.Content = mWallScale.ToString("N4");
 
         }
@@ -1167,13 +1281,16 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             break;
 
 
-                        
                         case "wallDetection":
                             mWallStartY = Convert.ToInt16(node["wallY"].InnerText);
                             wall_startY_textBox.Text = Convert.ToString(mWallStartY);
                             mWallScale = Convert.ToDouble(node["wallScale"].InnerText);
                             wall_scale_slider.Value = mWallScale;
+
                             break;
+
+
+
 
                     }
 
@@ -1249,7 +1366,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         {
             //실시간으로 데이터를 보낸다. E를 보내는 이유 -> 좌표하나임을 구분시켜주기 위해
             String vectorData = X + mStartX + "," + Y + mStartY + "E";
-              Console.WriteLine("sending point :" + vectorData);
+            Console.WriteLine("sending point :" + vectorData);
             SendLocation(vectorData);
 
         }
@@ -1355,7 +1472,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
         }
 
-      
+
     }
 
 
