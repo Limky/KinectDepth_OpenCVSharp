@@ -123,6 +123,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private static int mWallStartY = 250;
         private static double mWallScale = 0;
 
+        private static double mXDetection = 0;
+        private static double mYDetection = 0;
 
         private Boolean reverseFlag;
         private static HttpClient httpClient = HttpClient.getInstance();
@@ -435,7 +437,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     double pastY = ((Point)averageStack.Peek()).Y;
 
 
-                    if ((pastX - 70 <= newX && newX <= pastX + 70) && (pastY - 100 <= newY && newY <= pastY + 100))
+                    if ((pastX - mXDetection <= newX && newX <= pastX + mXDetection) && (pastY - mYDetection <= newY && newY <= pastY + mYDetection))
                     {
 
                         Point popPoint = ((Point)averageStack.Pop());
@@ -512,8 +514,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             double y = (double)(1 - ((Point)pointList[i]).Y / (mMaxDepth - mMinDepth));
 
 
-                            Canvas.SetLeft(ellipses[i], screenWidth * x);
-                            Canvas.SetTop(ellipses[i], screenHeight * y);
+                            Canvas.SetLeft(ellipses[i], screenWidth * Math.Round(x,4));
+                            Canvas.SetTop(ellipses[i], screenHeight * Math.Round(y,4));
 
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
@@ -534,8 +536,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
 
-                            Canvas.SetLeft(ellipses[i], screenWidth * x);
-                            Canvas.SetTop(ellipses[i], screenHeight * y);
+                            Canvas.SetLeft(ellipses[i], screenWidth * Math.Round(x, 4));
+                            Canvas.SetTop(ellipses[i], screenHeight * Math.Round(y, 4));
 
                             //   Console.WriteLine("TEST : " + screenWidth * x + " , " + screenWidth * y);
 
@@ -1012,6 +1014,39 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         }
 
 
+        private void x_detection_textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int convertValue = convertTextBoxValue((TextBox)sender);
+            if (convertValue >= 0 )
+            {
+                mXDetection = convertValue;
+                Console.WriteLine("mXDetection = " + mXDetection);
+            }
+            else
+            {
+                Console.WriteLine("=====유효하지 않는 값입니다. defualt 70 할당 ==== ");
+                mXDetection = 70;
+            }
+        }
+
+        private void y_detection_textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int convertValue = convertTextBoxValue((TextBox)sender);
+            if (convertValue >= 0 )
+            {
+                mYDetection = convertValue;
+                Console.WriteLine("mYDetection = " + mYDetection);
+            }
+            else
+            {
+                Console.WriteLine("=====유효하지 않는 값입니다. defualt 100 할당 ==== ");
+                mYDetection = 100;
+            }
+        }
+
+
+
+
         //xml을 생성하고 설정값을 저장한다.
         private void CreateXML()
         {
@@ -1314,8 +1349,11 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         void Update(double X, double Y)
         {
             //실시간으로 데이터를 보낸다. E를 보내는 이유 -> 좌표하나임을 구분시켜주기 위해
-            String vectorData = X + mStartX + "," + Y + mStartY + "E";
+            String vectorData = Math.Round(X, 4) + mStartX + "," + Math.Round(Y, 4) + mStartY + "E";
+
+            sending_to_unity_XY.Content = "X : " + Math.Round(X, 5) + "\nY : " + Math.Round(Y, 5);
             Console.WriteLine("sending point :" + vectorData);
+            //unity_connect_status.Content = "Success";
             SendLocation(vectorData);
 
         }
@@ -1356,7 +1394,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
             catch (SocketException err)
             {
-
+                unity_connect_status.Content = "Error";
                 Console.WriteLine("************************************ Socket send or receive error! : " + err + "************************************");
                 OnApplicationQuit();
                 // Debug.Log("Socket send or receive error! : " + err.ToString());
