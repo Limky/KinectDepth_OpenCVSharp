@@ -347,12 +347,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
 
-        Queue[] queueListX = new Queue[20];
-        Queue[] queueListY = new Queue[20];
+        Queue[] queueListX = new Queue[15];
+        Queue[] queueListY = new Queue[15];
 
         private void initQueue()
         {
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 15; i++)
             {
                 queueListX[i] = new Queue();
                 queueListY[i] = new Queue();
@@ -407,7 +407,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                     //  Console.WriteLine("R TEST lastX = " + lastX + " , " + "startDepth = " + startDepth);
                     lastX = lastX * ((double)startDepth / minDepth) - (mKinectDepthStreamWidth * ((double)startDepth / minDepth) - mKinectDepthStreamWidth) / 2; //HS8 offset 한수 알고리즘
-             //       Console.WriteLine("R TEST AFTER lastX = " + lastX + " , " + "startDepth = " + startDepth);
+                                                                                                                                                                 //       Console.WriteLine("R TEST AFTER lastX = " + lastX + " , " + "startDepth = " + startDepth);
 
                     pointList.Add(new Point(lastX, (double)(startDepth)));
                     startFlag = !startFlag;
@@ -418,116 +418,74 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
 
 
-        //    Console.WriteLine("pointList 갯수 = " + pointList.Count);
+            Console.WriteLine("pointList 갯수 = " + pointList.Count);
             //안쓰는 큐는 클리어한다. 왜냐면 큐가 전역변수로 할당해놨기 때문에 클리어를 안하면 계속 큐에 들어있어서 연산하기 때문에..
-            for (int i = pointList.Count; i < queueListX.Length; i++)
-            {
-                queueListX[i].Clear();
-                queueListY[i].Clear();
-            }
-            
 
-            for (int i = 0; i < pointList.Count; i++)
-            {
 
-                double newX = ((Point)pointList[i]).X;
-                double newDepth = (double)((Point)pointList[i]).Y;
+            Stack averageStack = new Stack();
 
-                for (int j = 0; j < pointList.Count; j++)
+            for (int i = 0; i < pointList.Count; i++) {
+
+                if (averageStack.Count > 0)
                 {
-                    double pastX = 0;
-                    double pastDepth = 0;
+                    double newX = ((Point)pointList[i]).X;
+                    double pastX = ((Point)averageStack.Peek()).X;
 
-                    if (queueListX[j].Count > 0)
+                    double newY = ((Point)pointList[i]).Y;
+                    double pastY = ((Point)averageStack.Peek()).Y;
+
+
+                    if ((pastX - 70 <= newX && newX <= pastX + 70) && (pastY - 100 <= newY && newY <= pastY + 100))
                     {
-                        pastX = (double)queueListX[j].Peek();
-                        pastDepth = (double)queueListY[j].Peek();
-                    }
-                    else {
-                        pastX = newX;
-                        pastDepth = newDepth;
-                    }
 
-                    //       Console.WriteLine("newX = " + newX + " VS pastX = " + pastX);
-                           Console.WriteLine("newDepth = " + newDepth + " VS pastDepth = " + pastDepth);
-                    //&& (pastDepth - 10 <= newDepth && newDepth <= pastDepth + 10)
-                    if ((pastX -70 <= newX && newX <= (pastX + 70))  && (pastDepth - 100 <= newDepth && newDepth <= pastDepth + 100) )
-                    {// 겹친다..
-                     // 겹치는 범위에 큐에 넣는다.
-                
-                     
-                        if (queueListX[j].Count >= 5)
-                        {
-                            queueListX[j].Dequeue();
-                            queueListY[j].Dequeue();
-                        }
-                       Console.WriteLine("Queue ListX [" + j + "] 에 겹치는 값 X = " + pointList[i]);
-                        queueListX[j].Enqueue(newX);
-                        queueListY[j].Enqueue(newDepth);
-                        break; //조건 만족햇으면 더이상 반복하지 말고 for/while문을 끝내라.
+                        Point popPoint = ((Point)averageStack.Pop());
+
+                        double popX = popPoint.X;
+                        double pushX = (newX + popX) / 2;
+
+                        double popY = popPoint.Y;
+                        double pushY = (newY + popY) / 2;
+
+                        averageStack.Push(new Point(pushX,pushY));
 
                     }
                     else {
-               //         Console.WriteLine("Queue ListX [" + i + "] 에 새로운 값 X = " + pointList[i]);
-                        if (queueListX[i].Count >= 5)
-                        {
-                            queueListX[i].Dequeue();
-                            queueListY[i].Dequeue();
-                        }
-                        //진짜 새로운 점이다.
-                        queueListX[i].Enqueue(newX);
-                        queueListY[i].Enqueue(newDepth);
-                        break; //조건 만족햇으면 더이상 반복하지 말고 for/while문을 끝내라.
+
+                        averageStack.Push((Point)pointList[i]);
                     }
 
-                   
+
                 }
-
-         
-
-
-            }
-
-
-            for (int i = 0; i < queueListX.Length; i++)
-            {
-                if (queueListX[i].Count > 0)
-                {
-                    double averageX = 0;
-                    double averageY = 0;
-                    int number = 0;
-
-                    while (number < queueListX[i].Count)
-                    {
-
-                        double indexX = (double)queueListX[i].Dequeue();
-                        double indeyY= (double)queueListY[i].Dequeue();
-
-                        //Console.WriteLine(i+"번째의 lastX 요소 : " + indexX);
-              //          Console.WriteLine(i+"번째의 lastY 요소 : " + indeyY);
-                        averageX += indexX;
-                        queueListX[i].Enqueue(indexX);
-
-                        averageY += indeyY;
-                        queueListY[i].Enqueue(indeyY);
-
-                        number++;
-
-                    }
-                    averageX = averageX / queueListX[i].Count;
-                    averageY = averageY / queueListY[i].Count;
-
-
-             //       PrintValues(queueListX[i]);
-                    Console.WriteLine("queueListX [" + i + "] 에 들어있는 x값들의 평균= " + averageX);
-                    Console.WriteLine("queueListY [" + i + "] 에 들어있는 y값들의 평균= " + averageY);
-                    samplingPointList.Add(new Point(averageX, (double)(averageY) - minDepth));
-                    drawAndSubmit(samplingPointList);
+                else {
+                    // 처음 아무것도 없을 때.
+                    // 최초로 삽입한다.
+                    averageStack.Push((Point)pointList[i]);
                 }
             }
 
 
-           
+
+
+
+            int num = 0;
+            while (averageStack.Count > 0) {
+
+                Console.WriteLine("pop [ "+ num + "] = " + averageStack.Peek());
+
+                Point popPoint = ((Point)averageStack.Pop());
+
+                double popX = popPoint.X;
+                double popY = popPoint.Y;
+               
+                samplingPointList.Add(new Point(popX, (double)(popY) - minDepth));
+
+                num++;
+            }
+
+            drawAndSubmit(samplingPointList);
+
+
+
 
 
 
@@ -535,8 +493,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         private void drawAndSubmit(ArrayList pointList)
         {
-
-
 
             int cllipse_index = 0;
 
@@ -562,9 +518,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
 
-                            //    x = (x + (145f / 512f)) / (1 + ((145f * 2f) / 512f));
-
-                            //  Console.WriteLine("TEST : " + screenWidth * x +" , "+ screenWidth * y);
                             //Unity로 실시간 좌표 전송하기
                             if (unityConnectSuccess)
                                 if (0 < x)
@@ -573,14 +526,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                         }
                         else
                         {
-
                             //  Console.Write(((Point)pointList[i]).X + "," + ((Point)pointList[i]).Y + " ");
 
                             double x = (double)(((Point)pointList[i]).X / mKinectDepthStreamWidth);
                             double y = (double)(((Point)pointList[i]).Y / (mMaxDepth - mMinDepth));
 
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
-                            //    x = (x + (145f / 512f)) / (1 + ((145f * 2f) / 512f));
 
 
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
@@ -592,8 +543,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             if (unityConnectSuccess)
                                 if (0 < x)
                                     Update((double)x, (double)y);
-
-
                         }
 
                     }
