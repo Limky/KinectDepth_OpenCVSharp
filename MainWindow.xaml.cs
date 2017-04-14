@@ -420,13 +420,14 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
 
 
-            Console.WriteLine("pointList 갯수 = " + pointList.Count);
+           // Console.WriteLine("pointList 갯수 = " + pointList.Count);
             //안쓰는 큐는 클리어한다. 왜냐면 큐가 전역변수로 할당해놨기 때문에 클리어를 안하면 계속 큐에 들어있어서 연산하기 때문에..
 
 
             Stack averageStack = new Stack();
 
-            for (int i = 0; i < pointList.Count; i++) {
+            for (int i = 0; i < pointList.Count; i++)
+            {
 
                 if (averageStack.Count > 0)
                 {
@@ -448,77 +449,194 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                         double popY = popPoint.Y;
                         double pushY = (newY + popY) / 2;
 
-                        averageStack.Push(new Point(pushX,pushY));
+                        averageStack.Push(new Point(pushX, pushY));
 
                     }
-                    else {
+                    else
+                    {
 
                         averageStack.Push((Point)pointList[i]);
                     }
 
 
                 }
-                else {
+                else
+                {
                     // 처음 아무것도 없을 때.
                     // 최초로 삽입한다.
                     averageStack.Push((Point)pointList[i]);
                 }
             }
 
-
-
-
-
-            int num = 0;
-            while (averageStack.Count > 0) {
-
-                Console.WriteLine("pop [ "+ num + "] = " + averageStack.Peek());
-
-                Point popPoint = ((Point)averageStack.Pop());
-
-                double popX = popPoint.X;
-                double popY = popPoint.Y;
-               
-                samplingPointList.Add(new Point(popX, (double)(popY) - minDepth));
-
-                num++;
-            }
-
-            drawAndSubmit(samplingPointList);
-
-
-
+            checkTheTime(averageStack);
 
 
 
         }
 
-        private void drawAndSubmit(ArrayList pointList)
+        //   private Hashtable[] tempHash = new Hashtable[10];
+        private static Stack stack_xy_time = new Stack();
+        private void checkTheTime(Stack averageStack)
         {
 
+            Hashtable[] hashArray;
+            Hashtable[] resultHash = new Hashtable[averageStack.Count];
+
+            //  Console.WriteLine("averageStack 갯수 = " + averageStack.Count + "\n ");
+
+            if (stack_xy_time.Count > 0)
+            {
+                Console.Write("stack_xy_time > 0   \n ");
+                //스택을 배열로 초기화작업
+                int oldStackSize = stack_xy_time.Count;
+                hashArray = new Hashtable[oldStackSize];
+                for (int i = 0; i < oldStackSize; i++)
+                {
+                    hashArray[i] = (Hashtable)stack_xy_time.Pop();
+                }
+
+
+                int num = 0;
+                while (averageStack.Count > 0)
+                {
+                    //새로들어온 좌표들 꺼낸다.
+                    Point popPoint = ((Point)averageStack.Pop());
+                    double newX = popPoint.X;
+                    double newY = popPoint.Y;
+
+                    Console.Write("newX : " + newX + "\n newY : " + newY + "\n hashArray Size :" + hashArray.Count() + "\n");
+
+                    for (int i = 0; i < oldStackSize; i++)
+                    {
+                        Point pastPoint = (Point)hashArray[i]["point"];
+                        long oldTime = (long)hashArray[i]["oldTime"];
+                        double oldX = pastPoint.X;
+                        double oldY = pastPoint.Y;
+
+
+                        Console.Write(" oldX : " + oldX + "\n oldY : " + oldY + "\n oldTime : " + oldTime + "\n");
+
+                        if ((oldX - mXDetection <= newX && newX <= oldX + mXDetection) && (oldY - mYDetection <= newY && newY <= oldY + mYDetection))
+                        {
+                            Console.Write("두 좌표는 같습니다\n");
+
+                            popPoint.X = (oldX + newX) / 2f;
+                            popPoint.Y = (oldY + newY) / 2f;
+                            Hashtable pushingHash = new Hashtable();
+                            pushingHash.Add("point", popPoint);
+                            pushingHash.Add("oldTime", oldTime);
+
+                            resultHash[num] = pushingHash;
+                            break;
+
+                        }
+                        else
+                        {
+                            if (i == hashArray.Count() - 1)
+                            {
+                                Console.Write("두 좌표는 다릅니다\n");
+                                Hashtable pushingHash = new Hashtable();
+                                pushingHash.Add("point", popPoint);
+                                pushingHash.Add("oldTime", currentTimeMillis());
+                                resultHash[num] = pushingHash;
+                            }
+
+                        }
+
+                    }//for문 끝
+                    num++;
+
+
+                }//while문 끝
+
+                for (int i = 0; i < resultHash.Count(); i++)
+                {
+                    stack_xy_time.Push(resultHash[i]);
+                }
+
+                Console.Write("while 끝 drawAndSubmit2 호출 Call ~ !\n");
+                Console.Write("stack_xy_time count = " + stack_xy_time.Count + "\n");
+                drawAndSubmit2();
+
+                //시간판단.
+
+
+            }
+            else
+            {
+            //    Console.Write("******************* stack_xy_time 초기작업 *******************\n");
+                while (averageStack.Count > 0)
+                {
+                    //큐에 아무것도 없으며, 태초인 좌표가 들어왔을 때.
+                    Point popPoint = ((Point)averageStack.Pop());
+                    Hashtable hash = new Hashtable();
+                    hash.Add("point", popPoint);
+                    hash.Add("oldTime", currentTimeMillis());
+                    stack_xy_time.Push(hash);
+
+                }
+
+            }
+
+        }
+
+
+      private readonly DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        private long currentTimeMillis()
+        {
+            return (long)(DateTime.UtcNow - Jan1st1970).TotalMilliseconds;
+        }
+
+
+        private void drawAndSubmit2()
+        {
+
+            Console.Write("drawAndSubmit2 내부 stack_xy_time  = " + stack_xy_time.Count);
+            int size = stack_xy_time.Count;
             int cllipse_index = 0;
+
+            Hashtable[] hashTableArray = new Hashtable[size];
+            for (int i = 0; i < size; i++)
+            {
+                hashTableArray[i] = (Hashtable)stack_xy_time.Pop();
+
+            }
 
             //if (pointList.Count > 0)
             {
-                for (int i = 0; i < pointList.Count; i++)
+                for (int i = 0; i < hashTableArray.Count(); i++)
                 {
                     if (ellipses.Length > i)
                     {
-                        //reverse를 체크하지 않은 경우.
+                        //reverse를 체크 한 경우
                         if (reverseFlag)
                         {
 
                             //    Console.Write("X = " + ((Point)pointList[i]).X + " , Y = " + ((Point)pointList[i]).Y);
+                            Point pointList = (Point)hashTableArray[i]["point"];
 
-                            double x = (double)(1 - ((Point)pointList[i]).X / mKinectDepthStreamWidth);
-                            double y = (double)(1 - ((Point)pointList[i]).Y / (mMaxDepth - mMinDepth));
+                            double x = (double)(1 - pointList.X / mKinectDepthStreamWidth);
+                            double y = (double)(1 - pointList.Y / (mMaxDepth - mMinDepth));
 
 
-                            Canvas.SetLeft(ellipses[i], screenWidth * Math.Round(x,4));
-                            Canvas.SetTop(ellipses[i], screenHeight * Math.Round(y,4));
+                            Canvas.SetLeft(ellipses[i], screenWidth * Math.Round(x, 4));
+                            Canvas.SetTop(ellipses[i], screenHeight * Math.Round(y, 4));
 
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
+
+                            long oldTime = (long)hashTableArray[i]["oldTime"];
+                            if (oldTime + 3000 < currentTimeMillis())
+                            {
+                               // Console.Write("333333333333초초초초초초초초초 한수 안 수 안 아아아아앙 ㅎㅍ러러랴드ㅜㄹ ,ㅡㅁㄴㅇㄹ,ㅓㅜㅁㄴ라어ㅠㅈ밤굗히뮤농리ㅓ농뮤리ㅓ ㅏㅁ;ㄴㅇ라ㅓ;ㅁ너라;ㄴㅁㅇ");
+
+                            }
+                            else
+                            {
+
+                                stack_xy_time.Push(hashTableArray[i]);
+                            }
 
                             //Unity로 실시간 좌표 전송하기
                             if (unityConnectSuccess)
@@ -527,30 +645,48 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                         }
                         else
-                        {
+                        {   //reverse를 체크하지 않은 경우.
                             //  Console.Write(((Point)pointList[i]).X + "," + ((Point)pointList[i]).Y + " ");
 
-                            double x = (double)(((Point)pointList[i]).X / mKinectDepthStreamWidth);
-                            double y = (double)(((Point)pointList[i]).Y / (mMaxDepth - mMinDepth));
+                            Point pointList = (Point)hashTableArray[i]["point"];
+                            Console.Write("TEST pointList " + pointList.X + "y " + pointList.Y);
+                            double x = (double)(pointList.X / mKinectDepthStreamWidth);
+                            double y = (double)((pointList.Y- mMinDepth) / (mMaxDepth - mMinDepth));
+
+                            Console.Write("TEST x "+x+"y "+y);
 
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
-
 
                             Canvas.SetLeft(ellipses[i], screenWidth * Math.Round(x, 4));
                             Canvas.SetTop(ellipses[i], screenHeight * Math.Round(y, 4));
 
-                            //   Console.WriteLine("TEST : " + screenWidth * x + " , " + screenWidth * y);
+                          //  Console.WriteLine("TEST : " + screenWidth * x + " , " + screenWidth * y);
+
+
+
+                            long oldTime = (long)hashTableArray[i]["oldTime"];
+                            if (oldTime + 3000 < currentTimeMillis())
+                            {
+                                Console.Write("333333333333초초초초초초초초초 한수 안 수 안 아아아아앙 ㅎㅍ러러랴드ㅜㄹ ,ㅡㅁㄴㅇㄹ,ㅓㅜㅁㄴ라어ㅠㅈ밤굗히뮤농리ㅓ농뮤리ㅓ ㅏㅁ;ㄴㅇ라ㅓ;ㅁ너라;ㄴㅁㅇ");
+
+                            }
+                            else
+                            {
+
+                                stack_xy_time.Push(hashTableArray[i]);
+                            }
 
                             //Unity로 실시간 좌표 전송하기
                             if (unityConnectSuccess)
                                 if (0 < x)
                                     Update((double)x, (double)y);
+
                         }
 
                     }
                 }
                 //그려주지 않고 있는 잉여 원은 다른 위치로 보낸다.
-                for (int i = pointList.Count; i < ellipses.Length; i++)
+                for (int i = hashTableArray.Count(); i < ellipses.Length; i++)
                 {
 
                     Canvas.SetLeft(ellipses[i], -100);
@@ -560,7 +696,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             }
 
-            if (pointList.Count > 0)
+            if (hashTableArray.Count() > 0)
             {
                 Console.WriteLine();
                 Console.WriteLine();
@@ -1017,7 +1153,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private void x_detection_textBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
-            if (convertValue >= 0 )
+            if (convertValue >= 0)
             {
                 mXDetection = convertValue;
                 Console.WriteLine("mXDetection = " + mXDetection);
@@ -1032,7 +1168,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private void y_detection_textBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
-            if (convertValue >= 0 )
+            if (convertValue >= 0)
             {
                 mYDetection = convertValue;
                 Console.WriteLine("mYDetection = " + mYDetection);
