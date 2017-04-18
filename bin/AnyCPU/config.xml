@@ -3,19 +3,19 @@
   <mode>
     <floor>False</floor>
     <wall>True</wall>
-    <reverse>False</reverse>
+    <reverse>True</reverse>
   </mode>
   <depth>
-    <minDepth>550</minDepth>
-    <maxDepth>1480</maxDepth>
+    <minDepth>565</minDepth>
+    <maxDepth>1535</maxDepth>
   </depth>
   <unityScreen>
     <width>1330</width>
     <height>1000</height>
   </unityScreen>
   <unitIpAddress>
-    <ip>192.168.2.119</ip>
-    <port>8080</port>
+    <ip>192.168.100.3</ip>
+    <port>6777</port>
   </unitIpAddress>
   <floorPaddingDetect>
     <left>0</left>
@@ -32,6 +32,6 @@
     <wallScale>0.32</wallScale>
   </wallDetection>
   <time>
-    <savedTime>2017-04-18 01:42:58</savedTime>
+    <savedTime>2017-03-31 02:55:23</savedTime>
   </time>
 </root>
