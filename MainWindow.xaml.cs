@@ -128,9 +128,10 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         private Boolean reverseFlag;
         private static HttpClient httpClient = HttpClient.getInstance();
-        private static String ServerIp;
+        private static String ServerIp="192.168.0.1";
         private Boolean serverSettingFlag = false;
 
+        private String mTargetDeivice = "STEP8118";
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -636,15 +637,15 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             if (oldTime + 3000 < currentTimeMillis())
                             {//3초이벤트일 경우 
                                 Console.Write("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 3초 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * ");
-                                if (serverSettingFlag)
-                                    httpClient.sendPosToServer(x,y,1);
+                                sendXYToServer(x, y, 1);
                             }
                             else
                             {//1초이벤트일 경우 ( 기본적으로 1초이벤트임 )
-                                if (serverSettingFlag)
-                                    httpClient.sendPosToServer(x, y, 0);
+                                sendXYToServer(x, y, 0);
                                 stack_xy_time.Push(hashTableArray[i]);
-                            }
+
+
+                                }
 
                           
 
@@ -682,14 +683,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             if (oldTime + 3000 < currentTimeMillis())
                             {//3초이벤트일 경우 
                                 Console.Write("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 3초 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * ");
-                                if (serverSettingFlag)
-                                    httpClient.sendPosToServer(x, y, 1);
+                                sendXYToServer(x, y, 1);
+
                             }
                             else
                             {//1초이벤트일 경우 ( 기본적으로 1초이벤트임 )
-                                if(serverSettingFlag)
-                                httpClient.sendPosToServer(x, y, 0);
-
+                                sendXYToServer(x, y, 0);
                                 stack_xy_time.Push(hashTableArray[i]);
                             }
 
@@ -714,6 +713,24 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 Console.WriteLine();
                 Console.WriteLine();
             }
+        }
+
+
+        private void sendXYToServer(double x, double y, int longtab) {
+            if (serverSettingFlag) {
+                httpClient.sendPosToServer(x, y, longtab);
+                sending_to_unity_XY.Content = "X : " + x + "\nY : " + y;
+            }
+
+        }
+        private void sendXYToServer2(double x, double y, int longtab)
+        {
+            if (serverSettingFlag)
+            {
+                httpClient.sendPosToServer(x, y, longtab);
+              
+            }
+
         }
 
         public static void PrintValues(IEnumerable myCollection)
@@ -814,18 +831,39 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                         if (true)
                         {
                             if (!reverseFlag)
-                            {
+                            {    //리버스모드가 체크되어있지 않은 경우.
+                                // Console.WriteLine("Floor Mode 뎁스영상 X : " + (double)p.X + " 중심좌표 Y :" + (double)p.Y);
                                 //  Console.WriteLine("중심좌표 X : " + x + " 중심좌표 Y :" + y); 
-                                double x = (double)p.X * ((double)mUnityWidth / (double)mKinectDepthStreamWidth);
-                                double y = (double)p.Y * ((double)mUnityHeight / (double)mKinectDepthStreamHeight);
+                                double x = ((double)mKinectDepthStreamWidth - (double)p.X) * (1/ (double)mKinectDepthStreamWidth);
+                                double y = (double)p.Y * (1 / (double)mKinectDepthStreamHeight);
 
-                                Update(x, y);
+                                x = Math.Round(x, 2);
+                                y = Math.Round(y, 2);
+
+                                Console.WriteLine("Floor Mode 스케일 X:" +x+" Y :"+y);
+                                Thread thread = new Thread(delegate ()
+                                {
+                                    sendXYToServer2(x, y, 0);
+                                });
+                                thread.Start();
+
 
                             }
                             else
                             {
+                                Console.WriteLine("중심좌표 X : " + (double)p.X + " 중심좌표 Y :" + (double)p.Y);
 
+                                //  double x = (double)p.X * ((double)mUnityWidth / (double)mKinectDepthStreamWidth);
+                                //   double y = (double)p.Y * ((double)mUnityHeight / (double)mKinectDepthStreamHeight);
+                                double x = (double)p.X * ((double)1 / (double)mKinectDepthStreamWidth);
+                                double y = (double)p.Y * ((double)1 / (double)mKinectDepthStreamHeight);
 
+                                x = Math.Round(x, 2);
+                                y = Math.Round(y, 2);
+
+                                Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
+
+                                sendXYToServer(x, y, 0);
                             }
 
                         }
@@ -836,6 +874,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
 
         }
+
+     
 
         /* * * * * * * * * * * * * * * * * * *   Kinect Mode 설정  * * * * * * * * * * * * * * * * * * * * */
         //Floor모드 기본 디폴트 모드
@@ -1255,7 +1295,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                 textWriter.WriteEndElement();
 
-                textWriter.WriteStartElement("unitIpAddress");
+                textWriter.WriteStartElement("serverSetting");
 
                 textWriter.WriteStartElement("ip");
                 textWriter.WriteString(Convert.ToString(ServerIp));
@@ -1263,6 +1303,10 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                 textWriter.WriteStartElement("port");
                 textWriter.WriteString(Convert.ToString(kPort));
+                textWriter.WriteEndElement();
+
+                textWriter.WriteStartElement("targetDevice");
+                textWriter.WriteString(Convert.ToString(mTargetDeivice));
                 textWriter.WriteEndElement();
 
                 textWriter.WriteEndElement();
@@ -1374,23 +1418,26 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             break;
 
 
-                        case "unitIpAddress":
+                        case "serverSetting":
                             iPAdress = Convert.ToString(node["ip"].InnerText);
                             String[] SERVER_OCTET = iPAdress.Split('.');
                             int i = 0;
                             foreach (string s in SERVER_OCTET)
                             {
-                                UNITY_SERVER_OCTET[i] = Convert.ToInt16(s);
+                                MainWindow.SERVER_OCTET[i] = Convert.ToInt16(s);
                                 i++;
                             }
-                            unity_IPaddress_Octet_01.Text = UNITY_SERVER_OCTET[0].ToString();
-                            unity_IPaddress_Octet_02.Text = UNITY_SERVER_OCTET[1].ToString();
-                            unity_IPaddress_Octet_03.Text = UNITY_SERVER_OCTET[2].ToString();
-                            unity_IPaddress_Octet_04.Text = UNITY_SERVER_OCTET[3].ToString();
+                            server_IPaddress_Octet_01.Text = MainWindow.SERVER_OCTET[0].ToString();
+                            server_IPaddress_Octet_02.Text = MainWindow.SERVER_OCTET[1].ToString();
+                            server_IPaddress_Octet_03.Text = MainWindow.SERVER_OCTET[2].ToString();
+                            server_IPaddress_Octet_04.Text = MainWindow.SERVER_OCTET[3].ToString();
 
 
                             kPort = Convert.ToInt16(node["port"].InnerText);
-                            unity_Port_Number.Text = kPort.ToString();
+                            server_Port_Number.Text = kPort.ToString();
+
+                            mTargetDeivice = Convert.ToString(node["targetDevice"].InnerText);
+                            target_text_box.Text = mTargetDeivice.ToString();
 
                             break;
 
@@ -1460,7 +1507,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         private Boolean unityConnectSuccess = false;
 
-        public static int[] UNITY_SERVER_OCTET = new int[4];
+        public static int[] SERVER_OCTET = new int[4];
         public static string UNITY_SERVER_PORT;
 
 
@@ -1550,47 +1597,47 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
         }
 
-        private void unity_IPaddress_Octet_01_TextChanged(object sender, TextChangedEventArgs e)
+        private void server_IPaddress_Octet_01_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
             if (convertValue > 0)
             {
-                UNITY_SERVER_OCTET[0] = convertValue;
-                Console.WriteLine("UNITY_SERVER_OCTET[0] = " + UNITY_SERVER_OCTET[0]);
+                SERVER_OCTET[0] = convertValue;
+                Console.WriteLine("UNITY_SERVER_OCTET[0] = " + SERVER_OCTET[0]);
             }
         }
 
-        private void unity_IPaddress_Octet_02_TextChanged(object sender, TextChangedEventArgs e)
+        private void server_IPaddress_Octet_02_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
             if (convertValue > 0)
             {
-                UNITY_SERVER_OCTET[1] = convertValue;
-                Console.WriteLine("UNITY_SERVER_OCTET[1] = " + UNITY_SERVER_OCTET[1]);
+                SERVER_OCTET[1] = convertValue;
+                Console.WriteLine("UNITY_SERVER_OCTET[1] = " + SERVER_OCTET[1]);
             }
         }
 
-        private void unity_IPaddress_Octet_03_TextChanged(object sender, TextChangedEventArgs e)
+        private void server_IPaddress_Octet_03_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
             if (convertValue > 0)
             {
-                UNITY_SERVER_OCTET[2] = convertValue;
-                Console.WriteLine("UNITY_SERVER_OCTET[2] = " + UNITY_SERVER_OCTET[2]);
+                SERVER_OCTET[2] = convertValue;
+                Console.WriteLine("UNITY_SERVER_OCTET[2] = " + SERVER_OCTET[2]);
             }
         }
 
-        private void unity_IPaddress_Octet_04_TextChanged(object sender, TextChangedEventArgs e)
+        private void server_IPaddress_Octet_04_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
             if (convertValue > 0)
             {
-                UNITY_SERVER_OCTET[3] = convertValue;
-                Console.WriteLine("UNITY_SERVER_OCTET[3] = " + UNITY_SERVER_OCTET[3]);
+                SERVER_OCTET[3] = convertValue;
+                Console.WriteLine("UNITY_SERVER_OCTET[3] = " + SERVER_OCTET[3]);
             }
         }
 
-        private void unity_Port_Number_TextChanged(object sender, TextChangedEventArgs e)
+        private void server_Port_Number_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
             if (convertValue > 0)
@@ -1601,18 +1648,32 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
         }
 
-        private void unity_Server_IP_save_button_Click(object sender, RoutedEventArgs e)
+        private void server_IP_save_button_Click(object sender, RoutedEventArgs e)
         {
-            ServerIp = UNITY_SERVER_OCTET[0].ToString() + "." + UNITY_SERVER_OCTET[1].ToString() + "." + UNITY_SERVER_OCTET[2].ToString() + "." + UNITY_SERVER_OCTET[3].ToString();
+            ServerIp = SERVER_OCTET[0].ToString() + "." + SERVER_OCTET[1].ToString() + "." + SERVER_OCTET[2].ToString() + "." + SERVER_OCTET[3].ToString();
 
-            httpClient.settingServerIP(ServerIp+":"+kPort);
+            httpClient.setting(ServerIp+":"+kPort, mTargetDeivice);
             serverSettingFlag = true;
 
-            Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
+            unity_connect_status.Content = ServerIp + ":" + kPort+"\n"+ mTargetDeivice;
+
+          //  Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
         }
 
+        private void target_text_box_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            if (!textBox.Text.Equals(""))
+            {
+                mTargetDeivice = Convert.ToString(textBox.Text);
 
+            }
+
+        }
+
+      
     }
+
 
 
 

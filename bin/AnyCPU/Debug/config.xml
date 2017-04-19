@@ -1,22 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <mode>
-    <floor>False</floor>
-    <wall>True</wall>
+    <floor>True</floor>
+    <wall>False</wall>
     <reverse>False</reverse>
   </mode>
   <depth>
-    <minDepth>550</minDepth>
-    <maxDepth>1480</maxDepth>
+    <minDepth>500</minDepth>
+    <maxDepth>2200</maxDepth>
   </depth>
   <unityScreen>
     <width>1330</width>
     <height>1000</height>
   </unityScreen>
-  <unitIpAddress>
+  <serverSetting>
     <ip>192.168.2.119</ip>
     <port>8080</port>
-  </unitIpAddress>
+    <targetDevice>STEP021</targetDevice>
+  </serverSetting>
   <floorPaddingDetect>
     <left>0</left>
     <right>0</right>
@@ -28,10 +29,10 @@
     <startY>0</startY>
   </startXY>
   <wallDetection>
-    <wallY>290</wallY>
-    <wallScale>0.32</wallScale>
+    <wallY>250</wallY>
+    <wallScale>0</wallScale>
   </wallDetection>
   <time>
-    <savedTime>2017-04-18 01:42:58</savedTime>
+    <savedTime>2017-04-19 05:45:28</savedTime>
   </time>
 </root>

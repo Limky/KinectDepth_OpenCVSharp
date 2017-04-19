@@ -48,10 +48,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             return httpClient;
         }
 
-        public void settingServerIP(String serverIP) {
+        public void setting(String serverIP, String targetDevice) {
             server_ip = serverIP;
             SEND_URL = "http://" + server_ip + "/api/send";
-            Console.WriteLine("settingServerIP is called... setting Server IP = " + SEND_URL);
+            targetDeviceType = targetDevice;
+            Console.WriteLine("setting Server IP     = " + SEND_URL);
+            Console.WriteLine("setting Target Device = " + targetDeviceType);
 
         }
         byte[] byte1;
@@ -59,7 +61,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         {
 
             string json = "{\"deviceCode\":\"" + deviceCode + "\",\"targetDeviceType\":\"" + targetDeviceType + "\",\"sendData\":\"{\"nettype\":"+ nettype+",\"x\":"+x+",\"y\":"+y+",\"longtap\":" + longtap + "}\"}";
-            string sendDataStr = "{\"nettype\":" + nettype + ",\"x\":" + x + ",\"y\":" + y + ",\"longtap\":" + longtap + "}\"";
+            string sendDataStr = "{\"nettype\":" + nettype + ",\"x\":" + x + ",\"y\":" + y + ",\"longtap\":" + longtap + "}\""; 
 
             Console.WriteLine("sendPosToServer is called... Server IP = " + SEND_URL);
             Console.WriteLine("sendPosToServer is called... Send json = " + json);
