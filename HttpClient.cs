@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -13,8 +13,6 @@ using System.Web;
 using System.Net;
 using System.IO;
 using System.Xml;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
 
 
@@ -40,7 +38,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         public static HttpClient getInstance()
         {
-         
+
             if (httpClient == null)
             {
                 httpClient = new HttpClient();
@@ -48,7 +46,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             return httpClient;
         }
 
-        public void setting(String serverIP, String targetDevice) {
+        public void setting(String serverIP, String targetDevice)
+        {
             server_ip = serverIP;
             SEND_URL = "http://" + server_ip + "/api/send";
             targetDeviceType = targetDevice;
@@ -57,21 +56,17 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
         byte[] byte1;
-        public void sendPosToServer(double x , double y , int longtap)
+        public void sendPosToServer(double x, double y, int longtap)
         {
 
-            string json = "{\"deviceCode\":\"" + deviceCode + "\",\"targetDeviceType\":\"" + targetDeviceType + "\",\"sendData\":\"{\"nettype\":"+ nettype+",\"x\":"+x+",\"y\":"+y+",\"longtap\":" + longtap + "}\"}";
-            string sendDataStr = "{\"nettype\":" + nettype + ",\"x\":" + x + ",\"y\":" + y + ",\"longtap\":" + longtap + "}\""; 
+           // string json = "{\"deviceCode\":\"" + deviceCode + "\",\"targetDeviceType\":\"" + targetDeviceType + "\",\"sendData\":\"{\"nettype\":" + nettype + ",\"x\":" + x + ",\"y\":" + y + ",\"longtap\":" + longtap + "}\"}";
+            string sendDataStr = "{\"nettype\":" + nettype + ",\"x\":" + x + ",\"y\":" + y + ",\"longtap\":" + longtap + "}\"";
 
             Console.WriteLine("sendPosToServer is called... Server IP = " + SEND_URL);
-            Console.WriteLine("sendPosToServer is called... Send json = " + json);
+            Console.WriteLine("sendPosToServer is called... Send Data = " + sendDataStr);
 
-          
-            
+
             String formData = String.Format("deviceCode={0}&targetDeviceType={1}&sendData={2}", deviceCode, targetDeviceType, sendDataStr);
-
-
-
 
 
             byte[] sendData = UTF8Encoding.UTF8.GetBytes(formData);
@@ -92,12 +87,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
                 HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-                StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(),Encoding.GetEncoding("UTF-8"));
+                StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(), Encoding.GetEncoding("UTF-8"));
                 string returnstr = streamReader.ReadToEnd();
-                      streamReader.Close();
-                      httpWebResponse.Close();
-             
-                 Console.Write("return: " + returnstr);
+                streamReader.Close();
+                httpWebResponse.Close();
+
+                Console.Write("return: " + returnstr);
 
 
             }
@@ -108,49 +103,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
 
         }
-
-
-
-        public XmlDocument loadXMLFromServer(String SERVER_IP_Address)
-        {
-            LOAD_URL = "http://" + SERVER_IP_Address + "/getXml";
-
-            try
-            {
-
-                request = (HttpWebRequest)WebRequest.Create(LOAD_URL);
-                request.Method = "POST";
-                request.ContentType = "application/json";
-                // request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-
-                WebResponse webResponse = request.GetResponse();
-                using (Stream webStream = webResponse.GetResponseStream())
-                {
-                    if (webStream != null)
-                    {
-                        using (StreamReader responseReader = new StreamReader(webStream))
-                        {
-                            string responseStr = responseReader.ReadToEnd();
-                            String outstr = responseStr.Replace("\"", "'");
-
-                            Console.Out.WriteLine(outstr);
-
-                            XmlDocument doc = (XmlDocument)JsonConvert.DeserializeXmlNode(outstr);
-                            return doc;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.Out.WriteLine("--------Server err---------");
-                Console.Out.WriteLine(e.Message);
-
-            }
-
-            return null;
-        }
-
 
 
 
