@@ -128,7 +128,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         private Boolean reverseFlag;
         private static HttpClient httpClient = HttpClient.getInstance();
-        private static String ServerIp="192.168.0.1";
+        private static String ServerIp = "192.168.0.1";
         private Boolean serverSettingFlag = false;
 
         private String mTargetDeivice = "STEP8118";
@@ -372,10 +372,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             ushort* frameData = (ushort*)depthFrameData;
 
             //벽면모드에서 실제로 그려줄 부분의 시작과 끝
-            //  int startVal = this.depthFrameDescription.Width * value;
-            //  int endVal = this.depthFrameDescription.Width * (value + 1);
-
-
             int value = mmvalue;
             int startVal = this.depthFrameDescription.Width * value;
             int endVal = this.depthFrameDescription.Width * (value + 1);
@@ -412,7 +408,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                     //  Console.WriteLine("R TEST lastX = " + lastX + " , " + "startDepth = " + startDepth);
                     lastX = lastX * ((double)startDepth / minDepth) - (mKinectDepthStreamWidth * ((double)startDepth / minDepth) - mKinectDepthStreamWidth) / 2; //HS8 offset 한수 알고리즘
-                                                                                                                                                                 //       Console.WriteLine("R TEST AFTER lastX = " + lastX + " , " + "startDepth = " + startDepth);
+                                                                                                                                                              
 
                     pointList.Add(new Point(lastX, (double)(startDepth)));
                     startFlag = !startFlag;
@@ -423,10 +419,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
 
 
-           // Console.WriteLine("pointList 갯수 = " + pointList.Count);
-            //안쓰는 큐는 클리어한다. 왜냐면 큐가 전역변수로 할당해놨기 때문에 클리어를 안하면 계속 큐에 들어있어서 연산하기 때문에..
-
-
+            // Console.WriteLine("pointList 갯수 = " + pointList.Count);
+        
             Stack averageStack = new Stack();
 
             for (int i = 0; i < pointList.Count; i++)
@@ -489,7 +483,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             if (stack_xy_time.Count > 0)
             {
-            //    Console.Write("stack_xy_time > 0   \n ");
+                //    Console.Write("stack_xy_time > 0   \n ");
                 //스택을 배열로 초기화작업
                 int oldStackSize = stack_xy_time.Count;
                 hashArray = new Hashtable[oldStackSize];
@@ -507,7 +501,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     double newX = popPoint.X;
                     double newY = popPoint.Y;
 
-               //     Console.Write("newX : " + newX + "\n newY : " + newY + "\n hashArray Size :" + hashArray.Count() + "\n");
+                    //     Console.Write("newX : " + newX + "\n newY : " + newY + "\n hashArray Size :" + hashArray.Count() + "\n");
 
                     for (int i = 0; i < oldStackSize; i++)
                     {
@@ -517,11 +511,11 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                         double oldY = pastPoint.Y;
 
 
-                  //      Console.Write(" oldX : " + oldX + "\n oldY : " + oldY + "\n oldTime : " + oldTime + "\n");
+                        //      Console.Write(" oldX : " + oldX + "\n oldY : " + oldY + "\n oldTime : " + oldTime + "\n");
 
                         if ((oldX - mXDetection <= newX && newX <= oldX + mXDetection) && (oldY - mYDetection <= newY && newY <= oldY + mYDetection))
                         {
-                        //    Console.Write("두 좌표는 같습니다\n");
+                            //    Console.Write("두 좌표는 같습니다\n");
 
                             popPoint.X = (oldX + newX) / 2f;
                             popPoint.Y = (oldY + newY) / 2f;
@@ -537,7 +531,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                         {
                             if (i == hashArray.Count() - 1)
                             {
-                           //     Console.Write("두 좌표는 다릅니다\n");
+                                //     Console.Write("두 좌표는 다릅니다\n");
                                 Hashtable pushingHash = new Hashtable();
                                 pushingHash.Add("point", popPoint);
                                 pushingHash.Add("oldTime", currentTimeMillis());
@@ -557,17 +551,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     stack_xy_time.Push(resultHash[i]);
                 }
 
-         //       Console.Write("while 끝 drawAndSubmit2 호출 Call ~ !\n");
-          //      Console.Write("stack_xy_time count = " + stack_xy_time.Count + "\n");
-                drawAndSubmit2();
-
-                //시간판단.
+                drawAndSubmit();
 
 
             }
             else
             {
-            //    Console.Write("******************* stack_xy_time 초기작업 *******************\n");
+                //    Console.Write("******************* stack_xy_time 초기작업 *******************\n");
                 while (averageStack.Count > 0)
                 {
                     //큐에 아무것도 없으며, 태초인 좌표가 들어왔을 때.
@@ -584,7 +574,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         }
 
 
-      private readonly DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private readonly DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private long currentTimeMillis()
         {
@@ -592,10 +582,9 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         }
 
 
-        private void drawAndSubmit2()
+        private void drawAndSubmit()
         {
 
-         //   Console.Write("drawAndSubmit2 내부 stack_xy_time  = " + stack_xy_time.Count);
             int size = stack_xy_time.Count;
             int cllipse_index = 0;
 
@@ -627,10 +616,10 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             x = Math.Round(x, 4);
                             y = Math.Round(y, 4);
 
-                            Console.Write("TEST x " + x + " y " + y+"\n");
+                            Console.Write("TEST x " + x + " y " + y + "\n");
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
                             Canvas.SetTop(ellipses[i], screenHeight * y);
-  
+
 
 
                             long oldTime = (long)hashTableArray[i]["oldTime"];
@@ -645,14 +634,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 stack_xy_time.Push(hashTableArray[i]);
 
 
-                                }
+                            }
 
-                          
-
-                            ////Unity로 실시간 좌표 전송하기
-                            //if (unityConnectSuccess)
-                            //    if (0 < x)
-                            //        Update((double)x, (double)y);
 
                         }
                         else
@@ -660,13 +643,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             //  Console.Write(((Point)pointList[i]).X + "," + ((Point)pointList[i]).Y + " ");
 
                             Point pointList = (Point)hashTableArray[i]["point"];
-                         //   Console.Write("TEST pointList " + pointList.X + "y " + pointList.Y);
+                            //   Console.Write("TEST pointList " + pointList.X + "y " + pointList.Y);
                             double x = (double)(pointList.X / mKinectDepthStreamWidth);
-                            double y = (double)((pointList.Y- mMinDepth) / (mMaxDepth - mMinDepth));
+                            double y = (double)((pointList.Y - mMinDepth) / (mMaxDepth - mMinDepth));
 
-                
+
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
-                                                    
+
 
                             x = Math.Round(x, 4);
                             y = Math.Round(y, 4);
@@ -675,7 +658,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
                             Canvas.SetTop(ellipses[i], screenHeight * y);
 
-                          //  Console.WriteLine("TEST : " + screenWidth * x + " , " + screenWidth * y);
+                            //  Console.WriteLine("TEST : " + screenWidth * x + " , " + screenWidth * y);
 
 
 
@@ -692,7 +675,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 stack_xy_time.Push(hashTableArray[i]);
                             }
 
-                         
+
                         }
 
                     }
@@ -716,8 +699,10 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         }
 
 
-        private void sendXYToServer(double x, double y, int longtab) {
-            if (serverSettingFlag) {
+        private void sendXYToServer(double x, double y, int longtab)
+        {
+            if (serverSettingFlag)
+            {
                 httpClient.sendPosToServer(x, y, longtab);
                 sending_to_unity_XY.Content = "X : " + x + "\nY : " + y;
             }
@@ -728,7 +713,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             if (serverSettingFlag)
             {
                 httpClient.sendPosToServer(x, y, longtab);
-              
+
             }
 
         }
@@ -834,13 +819,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             {    //리버스모드가 체크되어있지 않은 경우.
                                 // Console.WriteLine("Floor Mode 뎁스영상 X : " + (double)p.X + " 중심좌표 Y :" + (double)p.Y);
                                 //  Console.WriteLine("중심좌표 X : " + x + " 중심좌표 Y :" + y); 
-                                double x = ((double)mKinectDepthStreamWidth - (double)p.X) * (1/ (double)mKinectDepthStreamWidth);
+                                double x = ((double)mKinectDepthStreamWidth - (double)p.X) * (1 / (double)mKinectDepthStreamWidth);
                                 double y = (double)p.Y * (1 / (double)mKinectDepthStreamHeight);
 
                                 x = Math.Round(x, 2);
                                 y = Math.Round(y, 2);
 
-                                Console.WriteLine("Floor Mode 스케일 X:" +x+" Y :"+y);
+                                Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
                                 Thread thread = new Thread(delegate ()
                                 {
                                     sendXYToServer2(x, y, 0);
@@ -875,7 +860,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
-     
+
 
         /* * * * * * * * * * * * * * * * * * *   Kinect Mode 설정  * * * * * * * * * * * * * * * * * * * * */
         //Floor모드 기본 디폴트 모드
@@ -1006,17 +991,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
-        ////소켓 연결 이벤트
-        //private void connectUnity_button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    Awake();
-        //}
-        ////소켓 연결끊기 이벤트
-        //private void stopUnity_button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    OnApplicationQuit();
-        //}
-
         //좌표 상하반전 이벤트
         private void reversePoint_checkBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -1028,20 +1002,11 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private void saveConfig_button_Click(object sender, RoutedEventArgs e)
         {
 
-            //     httpClient.sendXMLToServer(SERVER_IP + SERVER_PORT);
-
             CreateXML();
         }
         //kinect 설정 불러오기
         private void readConfig_button_Click(object sender, RoutedEventArgs e)
         {
-
-            /*   XmlDocument doc = httpClient.loadXMLFromServer(SERVER_IP + SERVER_PORT);
-                if (doc != null)
-                {
-                    doc.Save("./config.xml");
-                }
-             */
 
             ReadXML();
         }
@@ -1652,12 +1617,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         {
             ServerIp = SERVER_OCTET[0].ToString() + "." + SERVER_OCTET[1].ToString() + "." + SERVER_OCTET[2].ToString() + "." + SERVER_OCTET[3].ToString();
 
-            httpClient.setting(ServerIp+":"+kPort, mTargetDeivice);
+            httpClient.setting(ServerIp + ":" + kPort, mTargetDeivice);
             serverSettingFlag = true;
 
-            unity_connect_status.Content = ServerIp + ":" + kPort+"\n"+ mTargetDeivice;
+            unity_connect_status.Content = ServerIp + ":" + kPort + "\n" + mTargetDeivice;
 
-          //  Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
+            //  Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
         }
 
         private void target_text_box_TextChanged(object sender, TextChangedEventArgs e)
@@ -1671,7 +1636,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
-      
+
     }
 
 
