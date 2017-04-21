@@ -95,8 +95,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private static int mMinPixel = 0;
         private static int mMaxPixel = 255;
 
-        private static ushort mMinDepth = 0;
-        private static ushort mMaxDepth = 1837;
+        private static ushort mMinDepth = 500;
+        private static ushort mMaxDepth = 600;
 
         private static int mPaddingRightWidth = 0;
         private static int mPaddingLeftWidth = 0;
