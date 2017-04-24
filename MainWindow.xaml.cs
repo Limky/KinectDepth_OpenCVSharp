@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <copyright file="MainWindow.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
@@ -132,6 +132,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private Boolean serverSettingFlag = false;
 
         private String mTargetDeivice = "STEP8118";
+        private String mNettype = "8118";
+
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -704,7 +706,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             if (serverSettingFlag)
             {
                 httpClient.sendPosToServer(x, y, longtab);
-                sending_to_unity_XY.Content = "X : " + x + "\nY : " + y;
+               // sending_to_unity_XY.Content = "X : " + x + "\nY : " + y;
             }
 
         }
@@ -756,6 +758,43 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                                             : Properties.Resources.SensorNotAvailableStatusText;
         }
 
+
+
+        //Thread th = new Thread(new ParameterizedThreadStart(test));
+
+
+        //public static void test(double x, double y, int longtab)
+
+        //{
+
+        ////수행할 Thread내용 
+
+        // }
+        private Queue sendQueue = new Queue();
+
+        public void awakeAndStart() {
+           Thread th = new Thread(checkPosQueue);
+           th.Start();
+
+        }
+
+        public void checkPosQueue() {
+            while (true)
+            {
+                Console.WriteLine("sendQueue Count = "+ sendQueue.Count);
+                if (sendQueue.Count > 0)
+                    {
+                        Point p = (Point)sendQueue.Dequeue();
+                        Console.WriteLine("sendQueue = "+ (double)(p.X)+" , "+ (double)(p.Y));
+                        sendXYToServer((double)(p.X), (double)(p.Y), 0);
+
+
+                    }
+
+            }
+
+        }
+           
 
 
 
@@ -825,12 +864,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 x = Math.Round(x, 2);
                                 y = Math.Round(y, 2);
 
-                                Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
-                                Thread thread = new Thread(delegate ()
-                                {
-                                    sendXYToServer2(x, y, 0);
-                                });
-                                thread.Start();
+                             //   Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
+
+                                if (sendQueue.Count > 20000) sendQueue.Clear();
+
+                                sendQueue.Enqueue(new Point(x,y));
+
 
 
                             }
@@ -846,9 +885,10 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 x = Math.Round(x, 2);
                                 y = Math.Round(y, 2);
 
-                                Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
+                                //   Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
 
-                                sendXYToServer(x, y, 0);
+                                if (sendQueue.Count > 20000) sendQueue.Clear();
+                                sendQueue.Enqueue(new Point(x, y));
                             }
 
                         }
@@ -1007,9 +1047,38 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         //kinect 설정 불러오기
         private void readConfig_button_Click(object sender, RoutedEventArgs e)
         {
-
+         
             ReadXML();
+    
+
         }
+        //
+        private void saveServerConfig_button_Click(object sender, RoutedEventArgs e)
+        {
+            if (serverSettingFlag)
+            {
+                httpClient.sendXMLToServer();
+            }
+        }
+        //서버로 부터 config 정보를 불러와서 로컬config에 덮어씌우고 다시 로컬config 파일을 가지고 재설정한다.
+        private void loadServerConfig_button_Click(object sender, RoutedEventArgs e)
+        {
+            if (serverSettingFlag)
+            {
+                XmlDocument doc = httpClient.loadConfigFileFromServer();
+                if (doc != null)
+                {
+                    doc.Save("./config.xml");
+                }
+
+                ReadXML();
+
+            }
+
+        }
+
+
+
         //Textbox util 
         private int convertTextBoxValue(TextBox sender)
         {
@@ -1612,16 +1681,18 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 Console.WriteLine("UNITY_SERVER_PORT = " + UNITY_SERVER_PORT);
             }
         }
-
+        
         private void server_IP_save_button_Click(object sender, RoutedEventArgs e)
         {
             ServerIp = SERVER_OCTET[0].ToString() + "." + SERVER_OCTET[1].ToString() + "." + SERVER_OCTET[2].ToString() + "." + SERVER_OCTET[3].ToString();
 
-            httpClient.setting(ServerIp + ":" + kPort, mTargetDeivice);
-            serverSettingFlag = true;
+            serverSettingFlag = httpClient.setting(ServerIp + ":" + kPort, mTargetDeivice, mNettype);
+
 
             unity_connect_status.Content = ServerIp + ":" + kPort + "\n" + mTargetDeivice;
 
+
+            awakeAndStart();
             //  Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
         }
 
@@ -1631,6 +1702,17 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             if (!textBox.Text.Equals(""))
             {
                 mTargetDeivice = Convert.ToString(textBox.Text);
+
+            }
+
+        }
+
+        private void nettype_textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            if (!textBox.Text.Equals(""))
+            {
+                mNettype = Convert.ToString(textBox.Text);
 
             }
 
