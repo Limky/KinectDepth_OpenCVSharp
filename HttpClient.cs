@@ -73,7 +73,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             // string json = "{\"deviceCode\":\"" + deviceCode + "\",\"targetDeviceType\":\"" + targetDeviceType + "\",\"sendData\":\"{\"nettype\":" + nettype + ",\"x\":" + x + ",\"y\":" + y + ",\"longtap\":" + longtap + "}\"}";
             string sendDataStr = "{\"nettype\":" + nettype + ",\"x\":" + x + ",\"y\":" + y + ",\"longtap\":" + longtap + "}";
 
-           Console.WriteLine("sendPosToServer is called... Server IP = " + SEND_URL);
+            Console.WriteLine("sendPosToServer is called... Server IP = " + SEND_URL);
             Console.WriteLine("sendPosToServer is called... Send Data = " + sendDataStr);
 
 
@@ -103,7 +103,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 //streamReader.Close();
                 //httpWebResponse.Close();
 
-               //Console.Write("return: " + returnstr);
+                //Console.Write("return: " + returnstr);
 
                 httpWebRequest.Abort();
 
@@ -123,7 +123,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             {
                 String formData = String.Format("configCode={0}", deviceCode);
                 byte[] sendData = UTF8Encoding.UTF8.GetBytes(formData);
-                
+
                 HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(LOAD_CONFIGFILE_URL);
                 httpWebRequest.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
                 httpWebRequest.Method = "POST";
@@ -148,7 +148,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 XmlDocument doc = (XmlDocument)JsonConvert.DeserializeXmlNode(returnstr);
                 return doc;
 
-            //    Console.Write("return: " + doc);
+                //    Console.Write("return: " + doc);
 
             }
             catch (Exception e)
