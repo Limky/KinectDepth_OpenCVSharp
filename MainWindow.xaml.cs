@@ -410,7 +410,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                     //  Console.WriteLine("R TEST lastX = " + lastX + " , " + "startDepth = " + startDepth);
                     lastX = lastX * ((double)startDepth / minDepth) - (mKinectDepthStreamWidth * ((double)startDepth / minDepth) - mKinectDepthStreamWidth) / 2; //HS8 offset 한수 알고리즘
-                                                                                                                                                              
+
 
                     pointList.Add(new Point(lastX, (double)(startDepth)));
                     startFlag = !startFlag;
@@ -422,7 +422,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
             // Console.WriteLine("pointList 갯수 = " + pointList.Count);
-        
+
             Stack averageStack = new Stack();
 
             for (int i = 0; i < pointList.Count; i++)
@@ -632,10 +632,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             }
                             else
                             {//1초이벤트일 경우 ( 기본적으로 1초이벤트임 )
-                                sendXYToServer(x, y, 0);
+                                if (oldTime + 100 > currentTimeMillis())
+                                {
+                                    sendXYToServer(x, y, 0);
+                             
+                                }
                                 stack_xy_time.Push(hashTableArray[i]);
-
-
                             }
 
 
@@ -673,7 +675,11 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             }
                             else
                             {//1초이벤트일 경우 ( 기본적으로 1초이벤트임 )
-                                sendXYToServer(x, y, 0);
+                                if (oldTime + 100 > currentTimeMillis())
+                                {
+                                    sendXYToServer(x, y, 0);
+
+                                }
                                 stack_xy_time.Push(hashTableArray[i]);
                             }
 
@@ -706,7 +712,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             if (serverSettingFlag)
             {
                 httpClient.sendPosToServer(x, y, longtab);
-               // sending_to_unity_XY.Content = "X : " + x + "\nY : " + y;
+                // sending_to_unity_XY.Content = "X : " + x + "\nY : " + y;
             }
 
         }
@@ -772,29 +778,33 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         // }
         private Queue sendQueue = new Queue();
 
-        public void awakeAndStart() {
-           Thread th = new Thread(checkPosQueue);
-           th.Start();
+        public void awakeAndStart()
+        {
+            if (mkinectFloorMode) { 
+            Thread th = new Thread(checkPosQueue);
+            th.Start();
+        }
 
         }
 
-        public void checkPosQueue() {
+        public void checkPosQueue()
+        {
             while (true)
             {
-                Console.WriteLine("sendQueue Count = "+ sendQueue.Count);
+                Console.WriteLine("sendQueue Count = " + sendQueue.Count);
                 if (sendQueue.Count > 0)
-                    {
-                        Point p = (Point)sendQueue.Dequeue();
-                        Console.WriteLine("sendQueue = "+ (double)(p.X)+" , "+ (double)(p.Y));
-                        sendXYToServer((double)(p.X), (double)(p.Y), 0);
+                {
+                    Point p = (Point)sendQueue.Dequeue();
+                    Console.WriteLine("sendQueue = " + (double)(p.X) + " , " + (double)(p.Y));
+                    sendXYToServer((double)(p.X), (double)(p.Y), 0);
 
 
-                    }
+                }
 
             }
 
         }
-           
+
 
 
 
@@ -864,11 +874,11 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 x = Math.Round(x, 2);
                                 y = Math.Round(y, 2);
 
-                             //   Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
+                                //   Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
 
                                 if (sendQueue.Count > 20000) sendQueue.Clear();
 
-                                sendQueue.Enqueue(new Point(x,y));
+                                sendQueue.Enqueue(new Point(x, y));
 
 
 
@@ -1047,9 +1057,9 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         //kinect 설정 불러오기
         private void readConfig_button_Click(object sender, RoutedEventArgs e)
         {
-         
+
             ReadXML();
-    
+
 
         }
         //
@@ -1681,7 +1691,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 Console.WriteLine("UNITY_SERVER_PORT = " + UNITY_SERVER_PORT);
             }
         }
-        
+
         private void server_IP_save_button_Click(object sender, RoutedEventArgs e)
         {
             ServerIp = SERVER_OCTET[0].ToString() + "." + SERVER_OCTET[1].ToString() + "." + SERVER_OCTET[2].ToString() + "." + SERVER_OCTET[3].ToString();
