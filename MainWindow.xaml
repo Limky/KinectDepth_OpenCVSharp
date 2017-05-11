@@ -115,13 +115,13 @@
         <Label x:Name="unity_connect_status" Content="Server info.." HorizontalAlignment="Left" Margin="664,19,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
         <Label x:Name="startY_label_Copy1" Content="scale" HorizontalAlignment="Left" Margin="1356,41,0,0" Grid.Row="2" VerticalAlignment="Top"/>
         <Slider x:Name="wall_scale_slider" HorizontalAlignment="Left" Margin="1389,47,0,0" Grid.Row="2" VerticalAlignment="Top" Width="37" LargeChange="0" ValueChanged="wall_scale_slider_ValueChanged" SmallChange="0.01"/>
-        <Label x:Name="wall_scale_value_label" Content="S." HorizontalAlignment="Left" Margin="1427,42,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <Label x:Name="wall_scale_value_label" Content="S." HorizontalAlignment="Left" Margin="1422,42,0,0" Grid.Row="2" VerticalAlignment="Top"/>
         <Label x:Name="sending_to_unity_XY" Content="Status..X Y" HorizontalAlignment="Left" Margin="833,12,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold" Width="78" Height="44" Visibility="Hidden"/>
-        <TextBox x:Name="x_detection_textBox" HorizontalAlignment="Left" Height="23" Margin="1689,23,0,0" Grid.Row="2" TextWrapping="Wrap" Text="70" VerticalAlignment="Top" Width="34" TextChanged="x_detection_textBox_TextChanged"/>
-        <Label x:Name="startY_label_Copy2" Content="X" HorizontalAlignment="Left" Margin="1672,20,0,0" Grid.Row="2" VerticalAlignment="Top"/>
-        <TextBox x:Name="y_detection_textBox" HorizontalAlignment="Left" Height="23" Margin="1689,48,0,0" Grid.Row="2" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="34" TextChanged="y_detection_textBox_TextChanged"/>
-        <Label x:Name="startY_label_Copy3" Content="Y" HorizontalAlignment="Left" Margin="1672,45,0,0" Grid.Row="2" VerticalAlignment="Top"/>
-        <Label x:Name="cog_label_Copy4" Content="Wall-XY-Detection" HorizontalAlignment="Left" Margin="1613,3,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
+        <TextBox x:Name="x_detection_textBox" HorizontalAlignment="Left" Height="23" Margin="1621,23,0,0" Grid.Row="2" TextWrapping="Wrap" Text="70" VerticalAlignment="Top" Width="34" TextChanged="x_detection_textBox_TextChanged"/>
+        <Label x:Name="startY_label_Copy2" Content="X" HorizontalAlignment="Left" Margin="1604,20,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <TextBox x:Name="y_detection_textBox" HorizontalAlignment="Left" Height="23" Margin="1621,48,0,0" Grid.Row="2" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="34" TextChanged="y_detection_textBox_TextChanged"/>
+        <Label x:Name="startY_label_Copy3" Content="Y" HorizontalAlignment="Left" Margin="1604,45,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <Label x:Name="cog_label_Copy4" Content="Wall-XY-Detection" HorizontalAlignment="Left" Margin="1602,3,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
         <Label x:Name="label3" Content="Target" HorizontalAlignment="Left" Margin="390,43,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
         <TextBox x:Name="target_text_box" HorizontalAlignment="Left" Height="23" Margin="435,48,0,0" Grid.Row="2" TextWrapping="Wrap" Text="STEP021" VerticalAlignment="Top" Width="68" TextChanged="target_text_box_TextChanged"/>
         <Button x:Name="saveServerConfig_button" Content="Server Save" HorizontalAlignment="Left" Margin="1814,28,0,0" Grid.Row="2" VerticalAlignment="Top" Width="75" Click="saveServerConfig_button_Click"/>
@@ -135,10 +135,10 @@
         <Label x:Name="cog_label_Copy5" Content="Ofps" HorizontalAlignment="Left" Margin="1211,0,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
         <Label x:Name="label2_Copy3" Content="S" HorizontalAlignment="Left" Margin="1198,23,0,0" Grid.Row="2" VerticalAlignment="Top"/>
         <Label x:Name="startY_label_Copy4" Content="wall-L" HorizontalAlignment="Left" Margin="1460,17,0,0" Grid.Row="2" VerticalAlignment="Top"/>
-        <Slider x:Name="left_wall_scale_slider" HorizontalAlignment="Left" Margin="1502,22,0,0" Grid.Row="2" VerticalAlignment="Top" Width="50" SmallChange="0.01" LargeChange="0.01" ValueChanged="left_wall_scale_slider_ValueChanged" Minimum="-10"/>
+        <Slider x:Name="left_wall_scale_slider" HorizontalAlignment="Left" Margin="1502,22,0,0" Grid.Row="2" VerticalAlignment="Top" Width="50" SmallChange="0.01" LargeChange="0" ValueChanged="left_wall_scale_slider_ValueChanged"/>
         <Label x:Name="startY_label_Copy5" Content="wall-R" HorizontalAlignment="Left" Margin="1460,42,0,0" Grid.Row="2" VerticalAlignment="Top"/>
-        <Slider x:Name="right_wall_scale_slider" HorizontalAlignment="Left" Margin="1502,47,0,0" Grid.Row="2" VerticalAlignment="Top" Width="50" SmallChange="0.01" LargeChange="0.01" ValueChanged="right_wall_scale_slider_ValueChanged" Minimum="-10"/>
-        <Label x:Name="left_wall_scale_value_label" Content="L-value" HorizontalAlignment="Left" Margin="1550,16,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <Slider x:Name="right_wall_scale_slider" HorizontalAlignment="Left" Margin="1502,45,0,0" Grid.Row="2" VerticalAlignment="Top" Width="50" SmallChange="0.01" LargeChange="0" ValueChanged="right_wall_scale_slider_ValueChanged"/>
+        <Label x:Name="left_wall_scale_value_label" Content="L-value" HorizontalAlignment="Left" Margin="1545,16,0,0" Grid.Row="2" VerticalAlignment="Top"/>
         <Label x:Name="right_wall_scale_value_label" Content="R-value" HorizontalAlignment="Left" Margin="1545,42,0,0" Grid.Row="2" VerticalAlignment="Top"/>
 
     </Grid>
