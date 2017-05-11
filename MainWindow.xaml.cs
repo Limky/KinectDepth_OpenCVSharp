@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <copyright file="MainWindow.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
@@ -661,19 +661,19 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
-                            //double leftScale = 0;
-                            //double rightScale = 0;
+                            double leftScale = 0;
+                            double rightScale = 0;
 
-                            //if (mRightWallScale != 0 )
-                            //{
-                            //    rightScale = mKinectDepthStreamWidth * (1 + ((double)mWallScale *2)) * (1 + mRightWallScale);
-                            //    x = (x * mKinectDepthStreamWidth * (1 + ((double)mWallScale * 2))) / rightScale;
-                            //}
-                            //if (mLeftWallScale != 0)
-                            //{
-                            //    leftScale = mKinectDepthStreamWidth * (1 + ((double)mWallScale *2)) * (1 + mLeftWallScale);
-                            //    x = ((x * mKinectDepthStreamWidth * (1 + ((double)mWallScale * 2))) + (mKinectDepthStreamWidth * (1 + (double)mWallScale ) * mLeftWallScale)) / leftScale;
-                            //}
+                            if (mRightWallScale != 0)
+                            {
+                                rightScale = mKinectDepthStreamWidth * (1 + ((double)mWallScale * 2)) * (1 + mRightWallScale);
+                                x = (x * mKinectDepthStreamWidth * (1 + ((double)mWallScale * 2))) / rightScale;
+                            }
+                            if (mLeftWallScale != 0)
+                            {
+                                leftScale = mKinectDepthStreamWidth * (1 + ((double)mWallScale * 2)) * (1 + mLeftWallScale);
+                                x = ((x * mKinectDepthStreamWidth * (1 + ((double)mWallScale * 2))) + (mKinectDepthStreamWidth * (1 + (double)mWallScale) * mLeftWallScale)) / leftScale;
+                            }
 
                             x = Math.Round(x, 4);
                             y = Math.Round(y, 4);
@@ -1458,6 +1458,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 textWriter.WriteStartElement("wallScale");
                 textWriter.WriteString(Convert.ToString(mWallScale));
                 textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallLScale");
+                textWriter.WriteString(Convert.ToString(mLeftWallScale));
+                textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallRScale");
+                textWriter.WriteString(Convert.ToString(mRightWallScale));
+                textWriter.WriteEndElement();
                 textWriter.WriteStartElement("wallXDetection");
                 textWriter.WriteString(Convert.ToString(mXDetection));
                 textWriter.WriteEndElement();
@@ -1588,6 +1594,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             wall_startY_textBox.Text = Convert.ToString(mWallStartY);
                             mWallScale = Convert.ToDouble(node["wallScale"].InnerText);
                             wall_scale_slider.Value = mWallScale;
+
+                            mLeftWallScale = Convert.ToDouble(node["wallLScale"].InnerText);               
+                            left_wall_scale_slider.Value = mLeftWallScale;
+
+                            mRightWallScale = Convert.ToDouble(node["wallRScale"].InnerText);
+                            right_wall_scale_slider.Value = mRightWallScale;
+
                             mXDetection = Convert.ToInt16(node["wallXDetection"].InnerText);
                             x_detection_textBox.Text = Convert.ToString(mXDetection);
                             mYDetection = Convert.ToInt16(node["wallYDetection"].InnerText);
