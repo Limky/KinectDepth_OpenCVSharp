@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\work\workspace_kinect\DepthBasics-WPF\obj\Release\
+C:\kinect\git\KinectDepth_OpenCVSharp\obj\Release\
 Microsoft.Samples.Kinect.DepthBasics
 none
 false
 TRACE
-D:\work\workspace_kinect\DepthBasics-WPF\App.xaml
+C:\kinect\git\KinectDepth_OpenCVSharp\App.xaml
 11151548125
 
-10-68025274
-211358711501
+11862264122
+21-1102548284
 MainWindow.xaml;
 
 False

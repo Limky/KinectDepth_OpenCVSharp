@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // <copyright file="MainWindow.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
@@ -42,6 +42,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
     using System.Windows.Shapes;
     using System.Net.Sockets;
     using System.Xml;
+    using System.Timers;
 
 
 
@@ -123,6 +124,9 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private static int mWallStartY = 250;
         private static double mWallScale = 0;
 
+        private static double mLeftWallScale = 0;
+        private static double mRightWallScale = 0;
+
         private static double mXDetection = 0;
         private static double mYDetection = 0;
 
@@ -133,7 +137,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         private String mTargetDeivice = "STEP8118";
         private String mNettype = "8118";
-
+        private String mDeviceCode = "8118";
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -601,7 +605,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             {
                 for (int i = 0; i < hashTableArray.Count(); i++)
                 {
-                    if (ellipses.Length > i)
+                    if (ellipses.Length > i) 
                     {
                         //reverse를 체크 한 경우
                         if (reverseFlag)
@@ -613,19 +617,21 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             double x = (double)(1 - pointList.X / mKinectDepthStreamWidth);
                             double y = (double)(1 - pointList.Y / (mMaxDepth - mMinDepth));
 
+
+
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
                             x = Math.Round(x, 4);
                             y = Math.Round(y, 4);
 
-                            Console.Write("TEST x " + x + " y " + y + "\n");
+                            Console.Write("TEST Wall x " + x + " y " + y + "\n");
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
                             Canvas.SetTop(ellipses[i], screenHeight * y);
 
 
 
                             long oldTime = (long)hashTableArray[i]["oldTime"];
-                            if (oldTime + 3000 < currentTimeMillis())
+                            if (oldTime + 2000 < currentTimeMillis())
                             {//3초이벤트일 경우 
                                 Console.Write("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 3초 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * ");
                                 sendXYToServer(x, y, 1);
@@ -635,7 +641,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 if (oldTime + 100 > currentTimeMillis())
                                 {
                                     sendXYToServer(x, y, 0);
-                             
+
                                 }
                                 stack_xy_time.Push(hashTableArray[i]);
                             }
@@ -651,14 +657,28 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             double x = (double)(pointList.X / mKinectDepthStreamWidth);
                             double y = (double)((pointList.Y - mMinDepth) / (mMaxDepth - mMinDepth));
 
+                    
 
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
+                            //double leftScale = 0;
+                            //double rightScale = 0;
+
+                            //if (mRightWallScale != 0 )
+                            //{
+                            //    rightScale = mKinectDepthStreamWidth * (1 + ((double)mWallScale *2)) * (1 + mRightWallScale);
+                            //    x = (x * mKinectDepthStreamWidth * (1 + ((double)mWallScale * 2))) / rightScale;
+                            //}
+                            //if (mLeftWallScale != 0)
+                            //{
+                            //    leftScale = mKinectDepthStreamWidth * (1 + ((double)mWallScale *2)) * (1 + mLeftWallScale);
+                            //    x = ((x * mKinectDepthStreamWidth * (1 + ((double)mWallScale * 2))) + (mKinectDepthStreamWidth * (1 + (double)mWallScale ) * mLeftWallScale)) / leftScale;
+                            //}
 
                             x = Math.Round(x, 4);
                             y = Math.Round(y, 4);
 
-                            Console.Write("TEST x " + x + " y " + y + "\n");
+                            Console.Write("TEST Wall x " + x + " y " + y + "\n");
                             Canvas.SetLeft(ellipses[i], screenWidth * x);
                             Canvas.SetTop(ellipses[i], screenHeight * y);
 
@@ -667,7 +687,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
                             long oldTime = (long)hashTableArray[i]["oldTime"];
-                            if (oldTime + 3000 < currentTimeMillis())
+                            if (oldTime + 2000 < currentTimeMillis())
                             {//3초이벤트일 경우 
                                 Console.Write("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 3초 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * ");
                                 sendXYToServer(x, y, 1);
@@ -675,12 +695,15 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             }
                             else
                             {//1초이벤트일 경우 ( 기본적으로 1초이벤트임 )
-                                if (oldTime + 100 > currentTimeMillis())
-                                {
-                                    sendXYToServer(x, y, 0);
+                             //if (oldTime + 100 > currentTimeMillis())
+                             //{
+                             //    sendXYToServer(x, y, 0);
 
-                                }
+                                //}
+                                //stack_xy_time.Push(hashTableArray[i]);
+                                sendXYToServer(x, y, 0);
                                 stack_xy_time.Push(hashTableArray[i]);
+
                             }
 
 
@@ -766,26 +789,53 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
 
-        //Thread th = new Thread(new ParameterizedThreadStart(test));
-
-
-        //public static void test(double x, double y, int longtab)
-
-        //{
-
-        ////수행할 Thread내용 
-
-        // }
+        /* * * * * * * * * * * * * * * * * * * * * * * * * *  초당 얼마나 보낼지 결정하는 로직  * * * * * * * * * * * * * * * * * * * * * * * * */
         private Queue sendQueue = new Queue();
+        private Stack sendStackXY = new Stack();
+        private Timer aTimer;
+        private double sec = 0;
 
+   
         public void awakeAndStart()
         {
-            if (mkinectFloorMode) { 
-            Thread th = new Thread(checkPosQueue);
-            th.Start();
-        }
+            if (mkinectFloorMode)
+            {
+                //    Thread th = new Thread(checkPosQueue);
+                //   th.Start();
+           
+
+                Console.WriteLine("Time " + sec);
+
+                aTimer = new System.Timers.Timer(sec); 
+                // Hook up the Elapsed event for the timer.
+                aTimer.Elapsed += OnTimedEvent;
+                aTimer.Elapsed += (sender, e) => OnTimedEvent(sender, e);
+                aTimer.Enabled = true;
+                
+
+            }
 
         }
+
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if (sendStackXY.Count > 0){
+                try
+                {
+                    Point p = ((Point)sendStackXY.Pop());
+                    Console.WriteLine("TEST floor =================== X : " + (double)(p.X) + "Y : " + (double)(p.Y));
+                    sendXYToServer((double)(p.X), (double)(p.Y), 0);
+                    if (sendStackXY.Count > 200) sendStackXY.Clear();
+                }
+                catch (Exception )
+                {
+                  
+   
+                }
+            }
+
+        }
+
 
         public void checkPosQueue()
         {
@@ -798,7 +848,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     Console.WriteLine("sendQueue = " + (double)(p.X) + " , " + (double)(p.Y));
                     sendXYToServer((double)(p.X), (double)(p.Y), 0);
 
-
                 }
 
             }
@@ -806,8 +855,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         }
 
 
-
-
+        int mNumber = 0;
+        
         //물체 중심점 찾기 알고리즘
         private void findCenterContourImage(IplImage image, int minArea)
         {
@@ -875,11 +924,16 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 y = Math.Round(y, 2);
 
                                 //   Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
+                                //    if (sendQueue.Count > 200) sendQueue.Clear();
+                                //   if(mNumber%4 == 0)
+                                //   sendQueue.Enqueue(new Point(x, y));
+                                //  if (mNumber > 20000) mNumber = 0;
 
-                                if (sendQueue.Count > 20000) sendQueue.Clear();
 
-                                sendQueue.Enqueue(new Point(x, y));
 
+
+                                if (x > 0 && y > 0)
+                                sendStackXY.Push(new Point(x, y));
 
 
                             }
@@ -898,6 +952,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 //   Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
 
                                 if (sendQueue.Count > 20000) sendQueue.Clear();
+
                                 sendQueue.Enqueue(new Point(x, y));
                             }
 
@@ -1349,8 +1404,16 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 textWriter.WriteString(Convert.ToString(kPort));
                 textWriter.WriteEndElement();
 
+                textWriter.WriteStartElement("deviceCode");
+                textWriter.WriteString(Convert.ToString(mDeviceCode));
+                textWriter.WriteEndElement();
+
                 textWriter.WriteStartElement("targetDevice");
                 textWriter.WriteString(Convert.ToString(mTargetDeivice));
+                textWriter.WriteEndElement();
+
+                textWriter.WriteStartElement("netType");
+                textWriter.WriteString(Convert.ToString(mNettype));
                 textWriter.WriteEndElement();
 
                 textWriter.WriteEndElement();
@@ -1395,8 +1458,16 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 textWriter.WriteStartElement("wallScale");
                 textWriter.WriteString(Convert.ToString(mWallScale));
                 textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallXDetection");
+                textWriter.WriteString(Convert.ToString(mXDetection));
+                textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallYDetection");
+                textWriter.WriteString(Convert.ToString(mYDetection));
+                textWriter.WriteEndElement();
 
                 textWriter.WriteEndElement();
+
+              
 
 
                 textWriter.WriteStartElement("time");
@@ -1483,6 +1554,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             mTargetDeivice = Convert.ToString(node["targetDevice"].InnerText);
                             target_text_box.Text = mTargetDeivice.ToString();
 
+                            mNettype = Convert.ToString(node["netType"].InnerText);
+                            nettype_textBox.Text = mNettype.ToString();
+
+                            mDeviceCode = Convert.ToString(node["deviceCode"].InnerText);
+                            deviceCode_textBox.Text = mDeviceCode.ToString();
+
+
                             break;
 
 
@@ -1510,6 +1588,10 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             wall_startY_textBox.Text = Convert.ToString(mWallStartY);
                             mWallScale = Convert.ToDouble(node["wallScale"].InnerText);
                             wall_scale_slider.Value = mWallScale;
+                            mXDetection = Convert.ToInt16(node["wallXDetection"].InnerText);
+                            x_detection_textBox.Text = Convert.ToString(mXDetection);
+                            mYDetection = Convert.ToInt16(node["wallYDetection"].InnerText);
+                            y_detection_textBox.Text = Convert.ToString(mYDetection);
 
                             break;
 
@@ -1696,7 +1778,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         {
             ServerIp = SERVER_OCTET[0].ToString() + "." + SERVER_OCTET[1].ToString() + "." + SERVER_OCTET[2].ToString() + "." + SERVER_OCTET[3].ToString();
 
-            serverSettingFlag = httpClient.setting(ServerIp + ":" + kPort, mTargetDeivice, mNettype);
+            serverSettingFlag = httpClient.setting(ServerIp + ":" + kPort, mTargetDeivice, mNettype, mDeviceCode);
 
 
             unity_connect_status.Content = ServerIp + ":" + kPort + "\n" + mTargetDeivice;
@@ -1728,7 +1810,45 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
+        private void deviceCode_textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            if (!textBox.Text.Equals(""))
+            {
+                mDeviceCode = Convert.ToString(textBox.Text);
 
+            }
+        }
+
+        private void frame_sec_textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+            TextBox timeBox = (TextBox)sender;
+            Double convertValue = Convert.ToDouble(timeBox.Text);
+            if (convertValue > 0)
+            {
+                sec = convertValue * 1000f;
+                Console.WriteLine("Sec = " + sec);
+            }
+        }
+
+        private void left_wall_scale_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Slider slider = sender as Slider;
+            Console.WriteLine("mLeftWallScale = " + (double)slider.Value);
+            mLeftWallScale = (double)slider.Value;
+
+            left_wall_scale_value_label.Content = mLeftWallScale.ToString("N4");
+        }
+
+        private void right_wall_scale_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Slider slider = sender as Slider;
+            Console.WriteLine("mRightWallScale = " + (double)slider.Value);
+            mRightWallScale = (double)slider.Value;
+
+            right_wall_scale_value_label.Content = mRightWallScale.ToString("N4");
+        }
     }
 
 

@@ -30,12 +30,14 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         public static HttpClient httpClient = null;
         public static HttpWebRequest request = null;
 
-        private String deviceCode = "SMA-60000";
+        private String deviceCode = "";
         private String targetDeviceType = "STEP021";
 
         private int nettype = 0;
 
         private String sendData;
+
+
 
         public static HttpClient getInstance()
         {
@@ -47,7 +49,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             return httpClient;
         }
 
-        public Boolean setting(String serverIP, String targetDevice, String nettype)
+        public Boolean setting(String serverIP, String targetDevice, String nettype, String deviceCode)
         {
             server_ip = serverIP;
             SEND_URL = "http://" + server_ip + "/api/send";
@@ -56,12 +58,15 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             this.targetDeviceType = targetDevice;
             this.nettype = Convert.ToInt32(nettype);
+            this.deviceCode = deviceCode;
 
             Console.WriteLine("setting Server SEND_URL               = " + SEND_URL);
             Console.WriteLine("setting Server LOAD_CONFIGFILE_URL IP = " + LOAD_CONFIGFILE_URL);
             Console.WriteLine("setting Server SAVE_CONFIGFILE_URL IP = " + SAVE_CONFIGFILE_URL);
             Console.WriteLine("setting Target Device                 = " + targetDeviceType);
             Console.WriteLine("setting Target nettype                = " + nettype);
+            Console.WriteLine("setting Target deviceCode             = " + deviceCode);
+
 
 
             return true;
@@ -81,10 +86,11 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
             byte[] sendData = UTF8Encoding.UTF8.GetBytes(formData);
-
+           
 
             try
             {
+
                 HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(SEND_URL);
                 httpWebRequest.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
                 httpWebRequest.Method = "POST";
@@ -94,9 +100,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                 requestStream.Write(sendData, 0, sendData.Length);
                 requestStream.Close();
-
-
-
+                
                 //HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
                 //StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(), Encoding.GetEncoding("UTF-8"));
                 //string returnstr = streamReader.ReadToEnd();
@@ -123,7 +127,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             {
                 String formData = String.Format("configCode={0}", deviceCode);
                 byte[] sendData = UTF8Encoding.UTF8.GetBytes(formData);
-
+                
                 HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(LOAD_CONFIGFILE_URL);
                 httpWebRequest.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
                 httpWebRequest.Method = "POST";
@@ -148,7 +152,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 XmlDocument doc = (XmlDocument)JsonConvert.DeserializeXmlNode(returnstr);
                 return doc;
 
-                //    Console.Write("return: " + doc);
+            //    Console.Write("return: " + doc);
 
             }
             catch (Exception e)
