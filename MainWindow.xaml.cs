@@ -192,6 +192,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             //초기 이전 설정값을 불러서 세팅한다.
             ReadXML();
+
+            serverConnect();
         }
 
         /// <summary>
@@ -256,6 +258,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 this.kinectSensor.Close();
                 this.kinectSensor = null;
             }
+
+            CreateXML();
         }
 
 
@@ -605,7 +609,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             {
                 for (int i = 0; i < hashTableArray.Count(); i++)
                 {
-                    if (ellipses.Length > i) 
+                    if (ellipses.Length > i)
                     {
                         //reverse를 체크 한 경우
                         if (reverseFlag)
@@ -657,7 +661,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             double x = (double)(pointList.X / mKinectDepthStreamWidth);
                             double y = (double)((pointList.Y - mMinDepth) / (mMaxDepth - mMinDepth));
 
-                    
+
 
                             x = (x + (((double)mKinectDepthStreamWidth * mWallScale) / 512f)) / (1 + ((((double)mKinectDepthStreamWidth * mWallScale) * 2f) / 512f));
 
@@ -795,23 +799,23 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         private Timer aTimer;
         private double sec = 0;
 
-   
+
         public void awakeAndStart()
         {
             if (mkinectFloorMode)
             {
                 //    Thread th = new Thread(checkPosQueue);
                 //   th.Start();
-           
+
 
                 Console.WriteLine("Time " + sec);
 
-                aTimer = new System.Timers.Timer(sec); 
+                aTimer = new System.Timers.Timer(sec);
                 // Hook up the Elapsed event for the timer.
                 aTimer.Elapsed += OnTimedEvent;
                 aTimer.Elapsed += (sender, e) => OnTimedEvent(sender, e);
                 aTimer.Enabled = true;
-                
+
 
             }
 
@@ -819,7 +823,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
-            if (sendStackXY.Count > 0){
+            if (sendStackXY.Count > 0)
+            {
                 try
                 {
                     Point p = ((Point)sendStackXY.Pop());
@@ -827,10 +832,10 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     sendXYToServer((double)(p.X), (double)(p.Y), 0);
                     if (sendStackXY.Count > 200) sendStackXY.Clear();
                 }
-                catch (Exception )
+                catch (Exception)
                 {
-                  
-   
+
+
                 }
             }
 
@@ -856,7 +861,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
         int mNumber = 0;
-        
+
         //물체 중심점 찾기 알고리즘
         private void findCenterContourImage(IplImage image, int minArea)
         {
@@ -933,7 +938,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
                                 if (x > 0 && y > 0)
-                                sendStackXY.Push(new Point(x, y));
+                                    sendStackXY.Push(new Point(x, y));
 
 
                             }
@@ -1473,7 +1478,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                 textWriter.WriteEndElement();
 
-              
+
 
 
                 textWriter.WriteStartElement("time");
@@ -1595,7 +1600,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             mWallScale = Convert.ToDouble(node["wallScale"].InnerText);
                             wall_scale_slider.Value = mWallScale;
 
-                            mLeftWallScale = Convert.ToDouble(node["wallLScale"].InnerText);               
+                            mLeftWallScale = Convert.ToDouble(node["wallLScale"].InnerText);
                             left_wall_scale_slider.Value = mLeftWallScale;
 
                             mRightWallScale = Convert.ToDouble(node["wallRScale"].InnerText);
@@ -1799,6 +1804,18 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             awakeAndStart();
             //  Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
+        }
+
+        private void serverConnect() {
+            ServerIp = SERVER_OCTET[0].ToString() + "." + SERVER_OCTET[1].ToString() + "." + SERVER_OCTET[2].ToString() + "." + SERVER_OCTET[3].ToString();
+            
+            serverSettingFlag = httpClient.setting(ServerIp + ":" + kPort, mTargetDeivice, mNettype, mDeviceCode);
+
+
+            unity_connect_status.Content = ServerIp + ":" + kPort + "\n" + mTargetDeivice;
+
+
+            awakeAndStart();
         }
 
         private void target_text_box_TextChanged(object sender, TextChangedEventArgs e)
