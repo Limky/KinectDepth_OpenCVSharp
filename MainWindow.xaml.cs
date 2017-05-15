@@ -132,7 +132,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         private Boolean reverseFlag;
         private static HttpClient httpClient = HttpClient.getInstance();
-        private static String ServerIp = "192.168.0.1";
+        private static String ServerIp = "192.168.2.2";
         private Boolean serverSettingFlag = false;
 
         private String mTargetDeivice = "STEP8118";
@@ -190,10 +190,28 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             initQueue();
 
-            //초기 이전 설정값을 불러서 세팅한다.
+            // 서버연결
+            // 서버로부터 설정 로드
+            // 로컬로부터 설정 로드
+
             ReadXML();
 
             serverConnect();
+
+            //CreateXML();
+
+            if (serverSettingFlag)
+            {
+                XmlDocument doc = httpClient.loadConfigFileFromServer();
+                if (doc != null)
+                {
+                    doc.Save("./config.xml");
+                }
+
+                ReadXML();
+
+            }
+
         }
 
         /// <summary>
@@ -260,6 +278,9 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
 
             CreateXML();
+
+           
+
         }
 
 
@@ -1144,7 +1165,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 ReadXML();
 
             }
-
+  
         }
 
 
@@ -1491,8 +1512,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 textWriter.WriteEndDocument();
                 textWriter.Close();
 
+
                 String currentPath = Environment.CurrentDirectory;
                 Console.WriteLine("XML file saved in local " + currentPath);
+
+               // httpClient.sendXMLToServer();
+
             }
             catch (FormatException e)
             {
@@ -1639,8 +1664,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         private Socket m_Socket;
 
-        public static string iPAdress = "192.168.1.100";
-        public static int kPort = 3000;
+        public static string iPAdress = ServerIp;
+        public static int kPort = 8080;
 
         private int SenddataLength;                     // Send Data Length. (byte)
         private int ReceivedataLength;                     // Receive Data Length. (byte)
