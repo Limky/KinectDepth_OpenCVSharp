@@ -198,20 +198,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             serverConnect();
 
-            //CreateXML();
-
-            if (serverSettingFlag)
-            {
-                XmlDocument doc = httpClient.loadConfigFileFromServer();
-                if (doc != null)
-                {
-                    doc.Save("./config.xml");
-                }
-
-                ReadXML();
-
-            }
-
         }
 
         /// <summary>
@@ -279,7 +265,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             CreateXML();
 
-           
+
 
         }
 
@@ -636,7 +622,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                         if (reverseFlag)
                         {
 
-                            //    Console.Write("X = " + ((Point)pointList[i]).X + " , Y = " + ((Point)pointList[i]).Y);
+                            //Console.Write("X = " + ((Point)pointList[i]).X + " , Y = " + ((Point)pointList[i]).Y);
                             Point pointList = (Point)hashTableArray[i]["point"];
 
                             double x = (double)(1 - pointList.X / mKinectDepthStreamWidth);
@@ -659,12 +645,14 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             if (oldTime + 2000 < currentTimeMillis())
                             {//3초이벤트일 경우 
                                 Console.Write("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 3초 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * ");
+                                if(x > 0)
                                 sendXYToServer(x, y, 1);
                             }
                             else
                             {//1초이벤트일 경우 ( 기본적으로 1초이벤트임 )
                                 if (oldTime + 100 > currentTimeMillis())
                                 {
+                                    if(x > 0)
                                     sendXYToServer(x, y, 0);
 
                                 }
@@ -715,7 +703,8 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             if (oldTime + 2000 < currentTimeMillis())
                             {//3초이벤트일 경우 
                                 Console.Write("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 3초 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * ");
-                                sendXYToServer(x, y, 1);
+                                if (x > 0)
+                                    sendXYToServer(x, y, 1);
 
                             }
                             else
@@ -726,7 +715,9 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                                 //}
                                 //stack_xy_time.Push(hashTableArray[i]);
-                                sendXYToServer(x, y, 0);
+                                if (x > 0)
+                                    sendXYToServer(x, y, 0);
+
                                 stack_xy_time.Push(hashTableArray[i]);
 
                             }
@@ -827,8 +818,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             {
                 //    Thread th = new Thread(checkPosQueue);
                 //   th.Start();
-
-
+               
                 Console.WriteLine("Time " + sec);
 
                 aTimer = new System.Timers.Timer(sec);
@@ -839,6 +829,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
             }
+            clearWhiteBitmap();
 
         }
 
@@ -1165,7 +1156,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 ReadXML();
 
             }
-  
+
         }
 
 
@@ -1516,7 +1507,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 String currentPath = Environment.CurrentDirectory;
                 Console.WriteLine("XML file saved in local " + currentPath);
 
-               // httpClient.sendXMLToServer();
+                // httpClient.sendXMLToServer();
 
             }
             catch (FormatException e)
@@ -1827,20 +1818,49 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             unity_connect_status.Content = ServerIp + ":" + kPort + "\n" + mTargetDeivice;
 
 
+                if (serverSettingFlag)
+                {
+                    XmlDocument doc = httpClient.loadConfigFileFromServer();
+                    if (doc != null)
+                    {
+                        doc.Save("./config.xml");
+                    }
+
+                    ReadXML();
+
+                }
+
+          
+                
             awakeAndStart();
             //  Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
         }
 
-        private void serverConnect() {
+        private void serverConnect()
+        {
             ServerIp = SERVER_OCTET[0].ToString() + "." + SERVER_OCTET[1].ToString() + "." + SERVER_OCTET[2].ToString() + "." + SERVER_OCTET[3].ToString();
-            
+
             serverSettingFlag = httpClient.setting(ServerIp + ":" + kPort, mTargetDeivice, mNettype, mDeviceCode);
 
 
             unity_connect_status.Content = ServerIp + ":" + kPort + "\n" + mTargetDeivice;
 
+            if (serverSettingFlag)
+            {
+                XmlDocument doc = httpClient.loadConfigFileFromServer();
+                if (doc != null)
+                {
+                    doc.Save("./config.xml");
+                }
+
+                ReadXML();
+
+            }
+
 
             awakeAndStart();
+
+
         }
 
         private void target_text_box_TextChanged(object sender, TextChangedEventArgs e)
