@@ -96,8 +96,13 @@
         <TextBox x:Name="server_IPaddress_Octet_01" HorizontalAlignment="Left" Height="23" Margin="252,20,0,0" Grid.Row="2" TextWrapping="Wrap" Text="192" VerticalAlignment="Top" Width="33" TextChanged="server_IPaddress_Octet_01_TextChanged"/>
         <TextBox x:Name="server_IPaddress_Octet_02" HorizontalAlignment="Left" Height="23" Margin="290,20,0,0" Grid.Row="2" TextWrapping="Wrap" Text="168" VerticalAlignment="Top" Width="33" TextChanged="server_IPaddress_Octet_02_TextChanged"/>
         <TextBox x:Name="server_IPaddress_Octet_03" HorizontalAlignment="Left" Height="23" Margin="328,20,0,0" Grid.Row="2" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="33" TextChanged="server_IPaddress_Octet_03_TextChanged"/>
+<<<<<<< HEAD
         <TextBox x:Name="server_IPaddress_Octet_04" HorizontalAlignment="Left" Height="23" Margin="366,20,0,0" Grid.Row="2" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="33" TextChanged="server_IPaddress_Octet_04_TextChanged"/>
         <TextBox x:Name="server_Port_Number" HorizontalAlignment="Left" Height="23" Margin="252,46,0,0" Grid.Row="2" TextWrapping="Wrap" Text="8080" VerticalAlignment="Top" Width="33" TextChanged="server_Port_Number_TextChanged"/>
+=======
+        <TextBox x:Name="server_IPaddress_Octet_04" HorizontalAlignment="Left" Height="23" Margin="366,20,0,0" Grid.Row="2" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="33" TextChanged="server_IPaddress_Octet_04_TextChanged"/>
+        <TextBox x:Name="server_Port_Number" HorizontalAlignment="Left" Height="23" Margin="252,46,0,0" Grid.Row="2" TextWrapping="Wrap" Text="3000" VerticalAlignment="Top" Width="33" TextChanged="server_Port_Number_TextChanged"/>
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
         <Button x:Name="server_IP_save_button" Content="Save" HorizontalAlignment="Left" Margin="485,49,0,6" Grid.Row="2" Width="64" Click="server_IP_save_button_Click"/>
         <Label x:Name="xml_label" Content="XML" HorizontalAlignment="Left" Margin="1734,1,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold" RenderTransformOrigin="0.5,0.5">
             <Label.RenderTransform>
@@ -131,8 +136,13 @@
         <Label x:Name="server_IP_label_Copy" Content="Server" HorizontalAlignment="Left" Margin="220,0,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
         <Label x:Name="label3_Copy1" Content="DeviceCode" HorizontalAlignment="Left" Margin="399,19,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
         <TextBox x:Name="deviceCode_textBox" HorizontalAlignment="Left" Height="23" Margin="476,21,0,0" Grid.Row="2" TextWrapping="Wrap" Text="SMA-60000" VerticalAlignment="Top" Width="73" TextChanged="deviceCode_textBox_TextChanged"/>
+<<<<<<< HEAD
         <TextBox x:Name="frame_sec_textBox" HorizontalAlignment="Left" Height="23" Margin="1029,26,0,0" Grid.Row="2" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="31" TextChanged="frame_sec_textBox_TextChanged"/>
         <Label x:Name="cog_label_Copy5" Content="Multiple" HorizontalAlignment="Left" Margin="1015,0,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
+=======
+        <TextBox x:Name="frame_sec_textBox" HorizontalAlignment="Left" Height="23" Margin="1029,26,0,0" Grid.Row="2" TextWrapping="Wrap" Text="0.5" VerticalAlignment="Top" Width="31" TextChanged="frame_sec_textBox_TextChanged"/>
+        <Label x:Name="cog_label_Copy5" Content="Ofps" HorizontalAlignment="Left" Margin="1025,0,0,0" Grid.Row="2" VerticalAlignment="Top"  FontWeight="Bold"/>
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
         <Label x:Name="label2_Copy3" Content="S" HorizontalAlignment="Left" Margin="1012,23,0,0" Grid.Row="2" VerticalAlignment="Top"/>
         <Label x:Name="startY_label_Copy4" Content="wall-L" HorizontalAlignment="Left" Margin="1274,17,0,0" Grid.Row="2" VerticalAlignment="Top"/>
         <Slider x:Name="left_wall_scale_slider" HorizontalAlignment="Left" Margin="1316,22,0,0" Grid.Row="2" VerticalAlignment="Top" Width="50" SmallChange="0.01" LargeChange="0" ValueChanged="left_wall_scale_slider_ValueChanged"/>

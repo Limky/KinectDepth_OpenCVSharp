@@ -4,16 +4,28 @@
 winexe
 C#
 .cs
+<<<<<<< HEAD
 C:\sqisoft\KinectDepth_OpenCVSharp\obj\Debug\
+=======
+C:\kinect\git\KinectDepth_OpenCVSharp\obj\Debug\
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 Microsoft.Samples.Kinect.DepthBasics
 none
 false
 DEBUG;TRACE
+<<<<<<< HEAD
 C:\sqisoft\KinectDepth_OpenCVSharp\App.xaml
 11151548125
 
 11-406645472
 211034223543
+=======
+C:\kinect\git\KinectDepth_OpenCVSharp\App.xaml
+11151548125
+
+11-28218393
+21-1102548284
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 MainWindow.xaml;
 
 False

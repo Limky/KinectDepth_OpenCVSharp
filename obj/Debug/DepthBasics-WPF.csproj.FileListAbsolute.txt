@@ -348,6 +348,7 @@ C:\kinect\git\KinectDepth_OpenCVSharp\obj\Debug\DepthBasics-WPF_MarkupCompile.ca
 C:\kinect\git\KinectDepth_OpenCVSharp\obj\Debug\DepthBasics-WPF.g.resources
 C:\kinect\git\KinectDepth_OpenCVSharp\obj\Debug\Microsoft.Samples.Kinect.DepthBasics.Properties.Resources.resources
 C:\kinect\git\KinectDepth_OpenCVSharp\obj\Debug\DepthBasics-WPF.csproj.GenerateResource.Cache
+<<<<<<< HEAD
 C:\sqisoft\KinectDepth_OpenCVSharp\bin\AnyCPU\Debug\dll\x86\OpenCvSharpExtern.dll
 C:\sqisoft\KinectDepth_OpenCVSharp\bin\AnyCPU\Debug\dll\x86\msvcp120.dll
 C:\sqisoft\KinectDepth_OpenCVSharp\bin\AnyCPU\Debug\dll\x86\msvcr120.dll
@@ -418,3 +419,5 @@ C:\sqisoft\KinectDepth_OpenCVSharp\obj\Debug\Microsoft.Samples.Kinect.DepthBasic
 C:\sqisoft\KinectDepth_OpenCVSharp\obj\Debug\DepthBasics-WPF.csproj.GenerateResource.Cache
 C:\sqisoft\KinectDepth_OpenCVSharp\obj\Debug\DepthBasics-WPF.exe
 C:\sqisoft\KinectDepth_OpenCVSharp\obj\Debug\DepthBasics-WPF.pdb
+=======
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866

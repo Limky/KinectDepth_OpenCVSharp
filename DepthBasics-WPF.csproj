@@ -17,7 +17,10 @@
     <XefDelaySign>true</XefDelaySign>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+<<<<<<< HEAD
     <IsWebBootstrapper>false</IsWebBootstrapper>
+=======
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
     <PublishUrl>게시\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,6 +33,10 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+<<<<<<< HEAD
+=======
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>

@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <copyright file="MainWindow.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
@@ -192,6 +192,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             // 서버로부터 설정 로드
             // 로컬로부터 설정 로드
 
+<<<<<<< HEAD
+=======
+            // 서버연결
+            // 서버로부터 설정 로드
+            // 로컬로부터 설정 로드
+
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
             ReadXML();
 
             serverConnect();
@@ -630,15 +637,25 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             if (oldTime + 2000 < currentTimeMillis())
                             {//3초이벤트일 경우 
                                 Console.Write("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 3초 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * ");
+<<<<<<< HEAD
                                 if (x > 0)
                                     sendXYToServer(x, y, 1);
+=======
+                                if(x > 0)
+                                sendXYToServer(x, y, 1);
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
                             }
                             else
                             {//1초이벤트일 경우 ( 기본적으로 1초이벤트임 )
                                 if (oldTime + 100 > currentTimeMillis())
                                 {
+<<<<<<< HEAD
                                     if (x > 0)
                                         sendXYToServer(x, y, 0);
+=======
+                                    if(x > 0)
+                                    sendXYToServer(x, y, 0);
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
                                 }
                                 stack_xy_time.Push(hashTableArray[i]);
@@ -790,6 +807,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
 
+<<<<<<< HEAD
         /* * * * * * * * * * * * * * * * * * * * * * * * * *  얼마나 보낼지 결정하는 로직  * * * * * * * * * * * * * * * * * * * * * * * * */
         private Queue sendQueue = new Queue();
         private Stack sendStackXY = new Stack();
@@ -798,11 +816,22 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
         public void checkMode()
+=======
+        /* * * * * * * * * * * * * * * * * * * * * * * * * *  초당 얼마나 보낼지 결정하는 로직  * * * * * * * * * * * * * * * * * * * * * * * * */
+        private Queue sendQueue = new Queue();
+        private Stack sendStackXY = new Stack();
+        private Timer aTimer;
+        private double sec = 0;
+
+
+        public void awakeAndStart()
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
         {
             if (mkinectFloorMode)
             {
                 //    Thread th = new Thread(checkPosQueue);
                 //   th.Start();
+<<<<<<< HEAD
 
                 //Console.WriteLine("Time " + sec);
 
@@ -811,6 +840,16 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 //aTimer.Elapsed += OnTimedEvent;
                 //aTimer.Elapsed += (sender, e) => OnTimedEvent(sender, e);
                 //aTimer.Enabled = true;
+=======
+               
+                Console.WriteLine("Time " + sec);
+
+                aTimer = new System.Timers.Timer(sec);
+                // Hook up the Elapsed event for the timer.
+                aTimer.Elapsed += OnTimedEvent;
+                aTimer.Elapsed += (sender, e) => OnTimedEvent(sender, e);
+                aTimer.Enabled = true;
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
 
             }
@@ -818,6 +857,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
+<<<<<<< HEAD
         //private void OnTimedEvent(Object source, ElapsedEventArgs e)
         //{
         //    if (sendStackXY.Count > 0)
@@ -855,6 +895,45 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         //    }
 
         //}
+=======
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if (sendStackXY.Count > 0)
+            {
+                try
+                {
+                    Point p = ((Point)sendStackXY.Pop());
+                    Console.WriteLine("TEST floor =================== X : " + (double)(p.X) + "Y : " + (double)(p.Y));
+                    sendXYToServer((double)(p.X), (double)(p.Y), 0);
+                    if (sendStackXY.Count > 200) sendStackXY.Clear();
+                }
+                catch (Exception)
+                {
+
+
+                }
+            }
+
+        }
+
+
+        public void checkPosQueue()
+        {
+            while (true)
+            {
+                Console.WriteLine("sendQueue Count = " + sendQueue.Count);
+                if (sendQueue.Count > 0)
+                {
+                    Point p = (Point)sendQueue.Dequeue();
+                    Console.WriteLine("sendQueue = " + (double)(p.X) + " , " + (double)(p.Y));
+                    sendXYToServer((double)(p.X), (double)(p.Y), 0);
+
+                }
+
+            }
+
+        }
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
 
         int mNumber = 0;
@@ -924,8 +1003,22 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 x = Math.Round(x, 2);
                                 y = Math.Round(y, 2);
 
+<<<<<<< HEAD
                          
                                 mNumber++;
+=======
+                                //   Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
+                                //    if (sendQueue.Count > 200) sendQueue.Clear();
+                                //   if(mNumber%4 == 0)
+                                //   sendQueue.Enqueue(new Point(x, y));
+                                //  if (mNumber > 20000) mNumber = 0;
+
+
+
+
+                                if (x > 0 && y > 0)
+                                    sendStackXY.Push(new Point(x, y));
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
                                 if (mNumber % mfloorMultiple == 0)
                                     if (x > 0 && y > 0)
@@ -946,6 +1039,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                                 y = Math.Round(y, 2);
 
                                 //   Console.WriteLine("Floor Mode 스케일 X:" + x + " Y :" + y);
+<<<<<<< HEAD
                                 mNumber++;
 
                                 if (mNumber % mfloorMultiple == 0)
@@ -954,6 +1048,12 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                                 if (mNumber > 20000) mNumber = 0;
 
+=======
+
+                                if (sendQueue.Count > 20000) sendQueue.Clear();
+
+                                sendQueue.Enqueue(new Point(x, y));
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
                             }
 
                         }
@@ -1097,6 +1197,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 textWriter.WriteString(Convert.ToString(mStartX));
                 textWriter.WriteEndElement();
 
+<<<<<<< HEAD
                 textWriter.WriteStartElement("startY");
                 textWriter.WriteString(Convert.ToString(mStartY));
                 textWriter.WriteEndElement();
@@ -1143,6 +1244,58 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 Console.WriteLine("XML file saved in local " + currentPath);
 
                 // httpClient.sendXMLToServer();
+=======
+            ReadXML();
+
+
+        }
+        //
+        private void saveServerConfig_button_Click(object sender, RoutedEventArgs e)
+        {
+            if (serverSettingFlag)
+            {
+                httpClient.sendXMLToServer();
+            }
+        }
+        //서버로 부터 config 정보를 불러와서 로컬config에 덮어씌우고 다시 로컬config 파일을 가지고 재설정한다.
+        private void loadServerConfig_button_Click(object sender, RoutedEventArgs e)
+        {
+            if (serverSettingFlag)
+            {
+                XmlDocument doc = httpClient.loadConfigFileFromServer();
+                if (doc != null)
+                {
+                    doc.Save("./config.xml");
+                }
+
+                ReadXML();
+
+            }
+
+        }
+
+
+
+        //Textbox util 
+        private int convertTextBoxValue(TextBox sender)
+        {
+            TextBox rightPaddingWidth_textBox = (TextBox)sender;
+            if (!rightPaddingWidth_textBox.Text.Equals(""))
+            {
+                try
+                {
+                    ushort paddingRightWidth = Convert.ToUInt16(rightPaddingWidth_textBox.Text);
+                    if (paddingRightWidth >= 0)
+                        return paddingRightWidth;
+                }
+                catch
+                {
+                    Console.WriteLine("값이 유효하지 않습니다.");
+                }
+            }
+            return -1;
+        }
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
             }
             catch (FormatException e)
@@ -1363,6 +1516,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
+<<<<<<< HEAD
         void SendLocation(String vectorData)
         {
             //=======================================================
@@ -1375,6 +1529,21 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 // Send.
                 if (m_Socket != null)
                 {
+=======
+                textWriter.WriteStartElement("deviceCode");
+                textWriter.WriteString(Convert.ToString(mDeviceCode));
+                textWriter.WriteEndElement();
+
+                textWriter.WriteStartElement("targetDevice");
+                textWriter.WriteString(Convert.ToString(mTargetDeivice));
+                textWriter.WriteEndElement();
+
+                textWriter.WriteStartElement("netType");
+                textWriter.WriteString(Convert.ToString(mNettype));
+                textWriter.WriteEndElement();
+
+                textWriter.WriteEndElement();
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
                     SenddataLength = Encoding.Default.GetByteCount(sb.ToString());
                     Sendbyte = Encoding.Default.GetBytes(sb.ToString());
@@ -1415,10 +1584,33 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             mFindingCenterFlag = false;
             clearWhiteBitmap();
 
+<<<<<<< HEAD
         }
+=======
+                textWriter.WriteStartElement("wallDetection");
+                textWriter.WriteStartElement("wallY");
+                textWriter.WriteString(Convert.ToString(mWallStartY));
+                textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallScale");
+                textWriter.WriteString(Convert.ToString(mWallScale));
+                textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallLScale");
+                textWriter.WriteString(Convert.ToString(mLeftWallScale));
+                textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallRScale");
+                textWriter.WriteString(Convert.ToString(mRightWallScale));
+                textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallXDetection");
+                textWriter.WriteString(Convert.ToString(mXDetection));
+                textWriter.WriteEndElement();
+                textWriter.WriteStartElement("wallYDetection");
+                textWriter.WriteString(Convert.ToString(mYDetection));
+                textWriter.WriteEndElement();
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
 
 
+<<<<<<< HEAD
         /* * * * * * * * * * * * * * * * * * *   심도설정  * * * * * * * * * * * * * * * * * * * * */
         //MinDepth 설정
         private void minDepth_textBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -1432,6 +1624,14 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     ushort minDepthValue = Convert.ToUInt16(MinDepth_textBox.Text);
                     if (minDepthValue >= 0)
                         mMinDepth = minDepthValue;
+=======
+
+
+                textWriter.WriteStartElement("time");
+                textWriter.WriteStartElement("savedTime");
+                textWriter.WriteString(Convert.ToString(System.DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")));
+                textWriter.WriteEndElement();
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
                 }
                 catch
@@ -1440,6 +1640,19 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                 }
 
+<<<<<<< HEAD
+=======
+
+                String currentPath = Environment.CurrentDirectory;
+                Console.WriteLine("XML file saved in local " + currentPath);
+
+                // httpClient.sendXMLToServer();
+
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
             }
         }
 
@@ -1492,11 +1705,22 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
         }
 
+<<<<<<< HEAD
         //findCenterContourImage 중지
         private void stopCenter_button_Click(object sender, RoutedEventArgs e)
         {
             mFindingCenterFlag = false;
         }
+=======
+                            mNettype = Convert.ToString(node["netType"].InnerText);
+                            nettype_textBox.Text = mNettype.ToString();
+
+                            mDeviceCode = Convert.ToString(node["deviceCode"].InnerText);
+                            deviceCode_textBox.Text = mDeviceCode.ToString();
+
+
+                            break;
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
         //윈도우 창 크기가 변할 때 이벤트
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -1519,6 +1743,21 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             reverseFlag = !reverseFlag;
         }
 
+<<<<<<< HEAD
+=======
+                            mLeftWallScale = Convert.ToDouble(node["wallLScale"].InnerText);
+                            left_wall_scale_slider.Value = mLeftWallScale;
+
+                            mRightWallScale = Convert.ToDouble(node["wallRScale"].InnerText);
+                            right_wall_scale_slider.Value = mRightWallScale;
+
+                            mXDetection = Convert.ToInt16(node["wallXDetection"].InnerText);
+                            x_detection_textBox.Text = Convert.ToString(mXDetection);
+                            mYDetection = Convert.ToInt16(node["wallYDetection"].InnerText);
+                            y_detection_textBox.Text = Convert.ToString(mYDetection);
+
+                            break;
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
         //Kinect 설정 저장
         private void saveConfig_button_Click(object sender, RoutedEventArgs e)
@@ -1656,6 +1895,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
         }
 
+<<<<<<< HEAD
         private void startY_textBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             int convertValue = convertTextBoxValue((TextBox)sender);
@@ -1663,6 +1903,10 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             {
                 mStartY = convertValue;
                 Console.WriteLine("mStartY = " + mStartY);
+=======
+        public static string iPAdress = ServerIp;
+        public static int kPort = 8080;
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
             }
         }
@@ -1811,6 +2055,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             unity_connect_status.Content = ServerIp + ":" + kPort + "\n" + mTargetDeivice;
 
 
+<<<<<<< HEAD
             if (serverSettingFlag)
             {
                 XmlDocument doc = httpClient.loadConfigFileFromServer();
@@ -1826,6 +2071,23 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
 
             checkMode();
+=======
+                if (serverSettingFlag)
+                {
+                    XmlDocument doc = httpClient.loadConfigFileFromServer();
+                    if (doc != null)
+                    {
+                        doc.Save("./config.xml");
+                    }
+
+                    ReadXML();
+
+                }
+
+          
+                
+            awakeAndStart();
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
             //  Console.WriteLine("Setting UNITY_SERVER_IP = " + iPAdress + " : " + kPort.ToString());
         }
 
@@ -1851,7 +2113,11 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
 
 
+<<<<<<< HEAD
             checkMode();
+=======
+            awakeAndStart();
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
 
 
         }
@@ -1875,6 +2141,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 mNettype = Convert.ToString(textBox.Text);
 
             }
+<<<<<<< HEAD
 
         }
 
@@ -1888,6 +2155,21 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             }
         }
 
+=======
+
+        }
+
+        private void deviceCode_textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            if (!textBox.Text.Equals(""))
+            {
+                mDeviceCode = Convert.ToString(textBox.Text);
+
+            }
+        }
+
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
         private void frame_sec_textBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
@@ -1895,8 +2177,13 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             Double convertValue = Convert.ToDouble(timeBox.Text);
             if (convertValue > 0)
             {
+<<<<<<< HEAD
                 mfloorMultiple = convertValue;
                 Console.WriteLine("Multiple = " + mfloorMultiple);
+=======
+                sec = convertValue * 1000f;
+                Console.WriteLine("Sec = " + sec);
+>>>>>>> 99d55f2bac9ff6879648a9b24391a1a3ca3f7866
             }
         }
 
