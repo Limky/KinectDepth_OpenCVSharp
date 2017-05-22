@@ -15,7 +15,7 @@
   </unityScreen>
   <serverSetting>
     <ip>192.168.2.200</ip>
-    <port>8000</port>
+    <port>8080</port>
     <deviceCode>SMA-60000</deviceCode>
     <targetDevice>STEP021</targetDevice>
     <netType>5</netType>
@@ -39,6 +39,6 @@
     <wallYDetection>100</wallYDetection>
   </wallDetection>
   <time>
-    <savedTime>2017-05-22 04:10:09</savedTime>
+    <savedTime>2017-05-16 08:36:01</savedTime>
   </time>
 </root>
